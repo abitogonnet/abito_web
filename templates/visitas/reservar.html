@@ -1,0 +1,541 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Reservar visita | ABITO</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+</head>
+
+<body data-initial-step="{{ initial_step|default:'1' }}">
+
+<main class="hero-shell">
+<section class="hero-card">
+
+<div class="hero-left">
+
+<div class="brand-row">
+<img class="brand-logo" src="{% static 'img/logo_abito.png' %}" alt="Logo ABITO">
+
+<div class="brand-text">
+<h1 class="brand-name">ABITO</h1>
+<p class="brand-location">Gonnet · La Plata</p>
+</div>
+</div>
+
+<div class="hero-copy">
+
+<p class="catalog-label">RESERVAR VISITA</p>
+
+<div class="steps-bar">
+<div class="step-pill active" id="pill-1">1. Evento</div>
+<div class="step-pill" id="pill-2">2. Día</div>
+<div class="step-pill" id="pill-3">3. Horario</div>
+<div class="step-pill" id="pill-4">4. Confirmación</div>
+</div>
+
+<div class="reserve-card">
+<form method="post" id="reservaForm">
+{% csrf_token %}
+{{ form.hora_visita }}
+
+{% if form.non_field_errors or form.errors %}
+<div class="form-errors">
+  {% for error in form.non_field_errors %}
+    <p>{{ error }}</p>
+  {% endfor %}
+
+  {% for field in form %}
+    {% for error in field.errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- PASO 1 -->
+<div class="step-panel" id="step-1">
+
+<h2 class="reserve-title">Contanos sobre tu visita</h2>
+
+<p class="reserve-sub">
+Primero indicá cuántas personas van a asistir y cuándo es el evento.
+</p>
+
+<div class="reserve-form">
+
+<div class="form-group">
+<label for="{{ form.cantidad_personas.id_for_label }}">Cantidad de personas</label>
+{{ form.cantidad_personas }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.fecha_evento.id_for_label }}">Fecha del evento</label>
+{{ form.fecha_evento }}
+</div>
+
+<div class="reserve-summary">
+<p><strong>Horario de atención:</strong> lunes a viernes de 17:00 a 20:00</p>
+<p><strong>Las visitas se reservan solo dentro del último mes previo al evento.</strong></p>
+</div>
+
+<div class="detail-actions">
+<button type="button" class="btn btn-dark btn-reset" onclick="goToStep2()">
+Continuar
+</button>
+
+<a href="/" class="btn btn-light">Volver</a>
+</div>
+
+</div>
+</div>
+
+<!-- PASO 2 -->
+<div class="step-panel" id="step-2" style="display:none;">
+
+<h2 class="reserve-title">Elegí el día de tu visita</h2>
+
+<p class="reserve-sub">
+Seleccioná un día hábil disponible para venir a probarte los trajes.
+</p>
+
+<div class="reserve-form">
+
+<div class="reserve-tip-box">
+Solo podés reservar de lunes a viernes y dentro de los 30 días previos al evento.
+</div>
+
+<div class="form-group">
+<label for="{{ form.fecha_visita.id_for_label }}">Día para la visita</label>
+{{ form.fecha_visita }}
+</div>
+
+<div id="step2Message" class="step-inline-message" style="display:none;"></div>
+
+<div class="detail-actions">
+<button type="button" class="btn btn-light btn-reset" onclick="prevStep(1)">
+Volver
+</button>
+
+<button type="button" class="btn btn-dark btn-reset" onclick="goToStep3()">
+Continuar
+</button>
+</div>
+
+</div>
+</div>
+
+<!-- PASO 3 -->
+<div class="step-panel" id="step-3" style="display:none;">
+
+<h2 class="reserve-title">Elegí un horario</h2>
+
+<p class="reserve-sub">
+Elegí una de las opciones disponibles para ese día.
+</p>
+
+<div class="reserve-form">
+
+<div class="reserve-tip-box">
+Las opciones cambian según la cantidad de personas y los cupos disponibles de ese día.
+</div>
+
+<div class="form-group">
+<label>Horario</label>
+
+<div id="horariosWrap" class="horarios-wrap"></div>
+
+<p id="horariosEmpty" class="horarios-empty" style="display:none;">
+No hay horarios disponibles para esa fecha.
+</p>
+
+<div id="step3Message" class="step-inline-message" style="display:none;"></div>
+
+{% if form.hora_visita.errors %}
+  {% for error in form.hora_visita.errors %}
+    <p class="field-error">{{ error }}</p>
+  {% endfor %}
+{% endif %}
+</div>
+
+<div class="detail-actions">
+<button type="button" class="btn btn-light btn-reset" onclick="prevStep(2)">
+Volver
+</button>
+
+<button type="button" class="btn btn-dark btn-reset" onclick="goToStep4()">
+Continuar
+</button>
+</div>
+
+</div>
+</div>
+
+<!-- PASO 4 -->
+<div class="step-panel" id="step-4" style="display:none;">
+
+<h2 class="reserve-title">Confirmá tus datos</h2>
+
+<p class="reserve-sub">
+Completá tus datos y revisá el resumen antes de confirmar.
+</p>
+
+<div class="reserve-form">
+
+<div class="form-group">
+<label for="{{ form.nombre.id_for_label }}">Nombre</label>
+{{ form.nombre }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.telefono.id_for_label }}">Celular</label>
+{{ form.telefono }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.dni.id_for_label }}">DNI</label>
+{{ form.dni }}
+</div>
+
+<div class="reserve-summary" id="summaryBox">
+<p><strong>Cantidad de personas:</strong> <span id="summaryPersonas">—</span></p>
+<p><strong>Fecha del evento:</strong> <span id="summaryEvento">—</span></p>
+<p><strong>Día de la visita:</strong> <span id="summaryVisita">—</span></p>
+<p><strong>Horario:</strong> <span id="summaryHora">—</span></p>
+</div>
+
+<div class="detail-actions">
+<button type="button" class="btn btn-light btn-reset" onclick="prevStep(3)">
+Volver
+</button>
+
+<button type="submit" class="btn btn-dark btn-reset">
+Confirmar visita
+</button>
+</div>
+
+</div>
+</div>
+
+</form>
+</div>
+
+</div>
+</div>
+
+<div class="hero-right">
+<img src="{% static 'img/hero_abito.jpg' %}" alt="ABITO">
+<div class="hero-fade"></div>
+</div>
+
+</section>
+</main>
+
+<a
+  class="whatsapp-float"
+  href="https://wa.me/5492213540416"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="WhatsApp"
+>W</a>
+
+<script>
+const INITIAL_STEP = Number(document.body.dataset.initialStep || 1);
+const HORARIOS_URL = "{% url 'visitas:horarios_disponibles' %}";
+
+function setActivePill(step){
+  for(let i=1;i<=4;i++){
+    document.getElementById("pill-"+i).classList.remove("active");
+  }
+  document.getElementById("pill-"+step).classList.add("active");
+}
+
+function showStep(step){
+  for(let i=1;i<=4;i++){
+    document.getElementById("step-"+i).style.display="none";
+  }
+  document.getElementById("step-"+step).style.display="block";
+  setActivePill(step);
+}
+
+function prevStep(step){
+  showStep(step);
+}
+
+function showInlineMessage(id, text){
+  const box = document.getElementById(id);
+  box.textContent = text;
+  box.style.display = "block";
+}
+
+function clearInlineMessage(id){
+  const box = document.getElementById(id);
+  box.textContent = "";
+  box.style.display = "none";
+}
+
+function formatDateToInput(dateObj){
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth()+1).padStart(2,"0");
+  const day = String(dateObj.getDate()).padStart(2,"0");
+  return `${year}-${month}-${day}`;
+}
+
+function getSelectedPersonas(){
+  const personas = document.getElementById("id_cantidad_personas");
+  return personas.value;
+}
+
+function getSelectedEvento(){
+  return document.getElementById("id_fecha_evento").value;
+}
+
+function getSelectedVisita(){
+  return document.getElementById("id_fecha_visita").value;
+}
+
+function updateVisitDateLimits(){
+  const evento = document.getElementById("id_fecha_evento");
+  const visita = document.getElementById("id_fecha_visita");
+
+  if(!evento.value){
+    return false;
+  }
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const fechaEvento = new Date(evento.value + "T00:00:00");
+  const minPorEvento = new Date(fechaEvento);
+  minPorEvento.setDate(minPorEvento.getDate() - 30);
+
+  const minReal = minPorEvento > hoy ? minPorEvento : hoy;
+
+  visita.min = formatDateToInput(minReal);
+  visita.max = formatDateToInput(fechaEvento);
+
+  if(visita.value){
+    const fechaActualVisita = new Date(visita.value + "T00:00:00");
+    if(fechaActualVisita < minReal || fechaActualVisita > fechaEvento){
+      visita.value = "";
+    }
+  }
+
+  return true;
+}
+
+function goToStep2(){
+  const personas = getSelectedPersonas();
+  const evento = getSelectedEvento();
+
+  if(!personas){
+    alert("Elegí la cantidad de personas.");
+    return;
+  }
+
+  if(!evento){
+    alert("Elegí la fecha del evento.");
+    return;
+  }
+
+  if(!updateVisitDateLimits()){
+    alert("Primero elegí la fecha del evento.");
+    return;
+  }
+
+  clearInlineMessage("step2Message");
+  showStep(2);
+}
+
+function esDiaHabil(fechaTexto){
+  const fecha = new Date(fechaTexto + "T00:00:00");
+  const dia = fecha.getDay();
+  return dia >= 1 && dia <= 5;
+}
+
+async function goToStep3(){
+  const fechaVisita = getSelectedVisita();
+
+  clearInlineMessage("step2Message");
+  clearInlineMessage("step3Message");
+
+  if(!fechaVisita){
+    showInlineMessage("step2Message", "Elegí un día para la visita.");
+    return;
+  }
+
+  if(!esDiaHabil(fechaVisita)){
+    showInlineMessage("step2Message", "El local solo está abierto de lunes a viernes de 17 a 20 hs.");
+    return;
+  }
+
+  await cargarHorarios();
+  showStep(3);
+}
+
+function goToStep4(){
+  const hora = document.getElementById("id_hora_visita").value;
+
+  clearInlineMessage("step3Message");
+
+  if(!hora){
+    showInlineMessage("step3Message", "Ese horario está lleno o no disponible. Elegí otro horario.");
+    return;
+  }
+
+  fillSummary();
+  showStep(4);
+}
+
+function fillSummary(){
+  const personas = document.getElementById("id_cantidad_personas");
+  const evento = document.getElementById("id_fecha_evento");
+  const visita = document.getElementById("id_fecha_visita");
+  const hora = document.getElementById("id_hora_visita");
+
+  document.getElementById("summaryPersonas").textContent =
+    personas.options[personas.selectedIndex].text;
+
+  document.getElementById("summaryEvento").textContent = evento.value || "—";
+  document.getElementById("summaryVisita").textContent = visita.value || "—";
+  document.getElementById("summaryHora").textContent = hora.value || "—";
+}
+
+function seleccionarHorario(horario){
+  const hiddenInput = document.getElementById("id_hora_visita");
+  hiddenInput.value = horario;
+
+  clearInlineMessage("step3Message");
+
+  document.querySelectorAll(".horario-pill").forEach(function(btn){
+    btn.classList.remove("active");
+    if(btn.dataset.hora === horario){
+      btn.classList.add("active");
+    }
+  });
+}
+
+function renderHorarios(horarios){
+  const wrap = document.getElementById("horariosWrap");
+  const empty = document.getElementById("horariosEmpty");
+  const hiddenInput = document.getElementById("id_hora_visita");
+
+  wrap.innerHTML = "";
+
+  let valorActual = hiddenInput.value || "";
+  if(valorActual.length >= 5){
+    valorActual = valorActual.slice(0, 5);
+    hiddenInput.value = valorActual;
+  }
+
+  if(!horarios.length){
+    hiddenInput.value = "";
+    empty.style.display = "block";
+    return;
+  }
+
+  empty.style.display = "none";
+
+  horarios.forEach(function(horario){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "step-pill horario-pill";
+    btn.dataset.hora = horario;
+    btn.textContent = horario;
+
+    if(horario === valorActual){
+      btn.classList.add("active");
+    }
+
+    btn.addEventListener("click", function(){
+      seleccionarHorario(horario);
+    });
+
+    wrap.appendChild(btn);
+  });
+
+  if(valorActual && !horarios.includes(valorActual)){
+    hiddenInput.value = "";
+    showInlineMessage("step3Message", "El horario que habías elegido ya no tiene cupo suficiente. Elegí otro.");
+  }
+}
+
+async function cargarHorarios(){
+  const fecha = getSelectedVisita();
+  const personas = getSelectedPersonas();
+
+  clearInlineMessage("step3Message");
+
+  if(!fecha || !personas){
+    renderHorarios([]);
+    return;
+  }
+
+  try{
+    const response = await fetch(`${HORARIOS_URL}?fecha=${fecha}&personas=${personas}`);
+    const data = await response.json();
+    renderHorarios(data.horarios || []);
+  }catch(error){
+    renderHorarios([]);
+    showInlineMessage("step3Message", "No se pudieron cargar los horarios. Probá nuevamente.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async function(){
+  const inputEvento = document.getElementById("id_fecha_evento");
+  const inputVisita = document.getElementById("id_fecha_visita");
+  const inputPersonas = document.getElementById("id_cantidad_personas");
+  const hiddenHora = document.getElementById("id_hora_visita");
+
+  if(hiddenHora.value && hiddenHora.value.length >= 5){
+    hiddenHora.value = hiddenHora.value.slice(0, 5);
+  }
+
+  inputEvento.addEventListener("change", function(){
+    updateVisitDateLimits();
+    inputVisita.value = "";
+    hiddenHora.value = "";
+    clearInlineMessage("step2Message");
+    clearInlineMessage("step3Message");
+    renderHorarios([]);
+  });
+
+  inputVisita.addEventListener("change", function(){
+    hiddenHora.value = "";
+    clearInlineMessage("step2Message");
+    clearInlineMessage("step3Message");
+    renderHorarios([]);
+  });
+
+  inputPersonas.addEventListener("change", function(){
+    hiddenHora.value = "";
+    clearInlineMessage("step3Message");
+    renderHorarios([]);
+  });
+
+  updateVisitDateLimits();
+
+  if(INITIAL_STEP >= 3){
+    await cargarHorarios();
+  }
+
+  if(INITIAL_STEP === 4){
+    fillSummary();
+  }
+
+  showStep(INITIAL_STEP);
+});
+</script>
+
+</body>
+</html>
