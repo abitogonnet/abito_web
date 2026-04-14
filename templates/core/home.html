@@ -22,86 +22,85 @@
 
             <div class="brand-text">
               <h1 class="brand-name">ABITO</h1>
-              <p class="brand-location">Gonnet · La Plata</p>
+              <p class="brand-location">Gonnet &middot; La Plata</p>
             </div>
           </div>
-
         </div>
 
         <div class="hero-copy">
           <div id="homeView">
-            <h2 class="hero-title">Encontrá el outfit ideal para tu próximo evento</h2>
+            <h2 class="hero-title">Encontra el outfit ideal para tu proximo evento</h2>
 
             <div class="hero-actions">
               <button type="button" class="btn btn-dark btn-reset" onclick="openCatalog()">
-                Ver catálogo
+                Ver catalogo
               </button>
 
               <a href="{% url 'visitas:reservar' %}" class="btn btn-light">Reservar visita</a>
             </div>
 
             <p class="hero-note">
-              Mostramos el catálogo, precios reales y talles disponibles. La dirección
-              exacta se comparte solamente después de confirmar la visita.
+              Mostramos el catalogo, precios reales y talles disponibles. La direccion
+              exacta se comparte solamente despues de confirmar la visita.
             </p>
 
             <div class="support-grid">
               <article class="support-card">
-                <p class="support-kicker">Cómo funciona</p>
-                <h3>1. Mirás el catálogo</h3>
-                <p>Explorás líneas, camisas, zapatos y combos para llegar con una idea clara.</p>
+                <p class="support-kicker">Como funciona</p>
+                <h3>1. Miras el catalogo</h3>
+                <p>Exploras lineas, camisas, zapatos y combos para llegar con una idea clara.</p>
               </article>
 
               <article class="support-card">
                 <p class="support-kicker">Pasos para alquilar</p>
-                <h3>2. Reservás tu visita</h3>
-                <p>Elegís fecha, horario y completás tus datos. La confirmación es automática.</p>
+                <h3>2. Reservas tu visita</h3>
+                <p>Elegis fecha, horario y completas tus datos. La confirmacion es automatica.</p>
               </article>
 
               <article class="support-card">
                 <p class="support-kicker">Preguntas frecuentes</p>
-                <h3>3. Venís al local</h3>
-                <p>La dirección exacta se envía al confirmar. La prueba presencial define el look final.</p>
+                <h3>3. Venis al local</h3>
+                <p>La direccion exacta se envia al confirmar. La prueba presencial define el look final.</p>
               </article>
 
               <article class="support-card">
                 <p class="support-kicker">Medios de pago</p>
-                <h3>4. Confirmás con ABITO</h3>
-                <p>Coordinás los detalles finales directamente con el local y el canal oficial de WhatsApp.</p>
+                <h3>4. Confirmas con ABITO</h3>
+                <p>Coordinas los detalles finales directamente con el local y el canal oficial de WhatsApp.</p>
               </article>
             </div>
 
             <div class="faq-list">
               <article class="faq-item">
-                <h3>¿Se puede alquilar online?</h3>
-                <p>No. La web está pensada para mostrar opciones y llevar la consulta a una visita presencial.</p>
+                <h3>&iquest;Se puede alquilar online?</h3>
+                <p>No. La web esta pensada para mostrar opciones y llevar la consulta a una visita presencial.</p>
               </article>
 
               <article class="faq-item">
-                <h3>¿Se ve la dirección antes de reservar?</h3>
-                <p>No. La ubicación exacta se informa después de confirmar la visita.</p>
+                <h3>&iquest;Se ve la direccion antes de reservar?</h3>
+                <p>No. La ubicacion exacta se informa despues de confirmar la visita.</p>
               </article>
 
               <article class="faq-item">
-                <h3>¿Qué pasa si un horario se ocupa?</h3>
-                <p>La agenda vuelve a validar el cupo al guardar, así que nunca se confirma un turno sin lugar real.</p>
+                <h3>&iquest;Que pasa si un horario se ocupa?</h3>
+                <p>La agenda vuelve a validar el cupo al guardar, asi que nunca se confirma un turno sin lugar real.</p>
               </article>
             </div>
           </div>
 
           <div id="catalogView" style="display:none;">
-            <p class="catalog-label">CATÁLOGO</p>
+            <p class="catalog-label">CATALOGO</p>
             <p class="section-intro">
-              Los trajes se organizan por línea. Camisas, zapatos y combos acompañan la elección.
+              Los trajes se organizan por linea. Camisas, zapatos y combos acompanan la eleccion.
             </p>
 
             <div class="catalog-menu">
               <button type="button" class="catalog-link catalog-btn" onclick="openImportados()">
-                Línea importada
+                Linea importada
               </button>
 
               <button type="button" class="catalog-link catalog-btn" onclick="openNacional()">
-                Línea nacional
+                Linea nacional
               </button>
 
               <button type="button" class="catalog-link catalog-btn" onclick="openCamisas()">
@@ -132,25 +131,44 @@
           <div id="importadosView" style="display:none;">
             <div class="detail-head">
               <div class="detail-line"></div>
-              <p class="detail-title">LÍNEA IMPORTADA</p>
+              <p class="detail-title">LINEA IMPORTADA</p>
               <div class="detail-line"></div>
             </div>
 
             <div class="catalog-stack">
               {% for item in trajes_importados %}
                 <article class="catalog-entry">
-                  <div class="detail-images">
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_modelo.url }}" alt="Traje línea importada modelando">
+                  <div class="product-gallery" data-autoplay-ms="5000">
+                    <div class="product-gallery-frame">
+                      <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
+                        <span aria-hidden="true">&#8249;</span>
+                      </button>
+                      <button type="button" class="gallery-nav gallery-next" aria-label="Foto siguiente">
+                        <span aria-hidden="true">&#8250;</span>
+                      </button>
+
+                      <div class="product-slide is-active">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_modelo.url }}" alt="Traje linea importada modelando">
+                        </div>
+                      </div>
+
+                      <div class="product-slide">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_colgado.url }}" alt="Traje linea importada colgado">
+                        </div>
+                      </div>
                     </div>
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_colgado.url }}" alt="Traje línea importada colgado">
+
+                    <div class="gallery-dots" role="tablist" aria-label="Fotos del producto">
+                      <button type="button" class="gallery-dot is-active" aria-label="Ver foto 1"></button>
+                      <button type="button" class="gallery-dot" aria-label="Ver foto 2"></button>
                     </div>
                   </div>
 
                   <div class="detail-meta">
                     <span><strong>Tela:</strong> {{ item.tela }}</span>
-                    <span class="detail-dot">·</span>
+                    <span class="detail-dot">&middot;</span>
                     <span><strong>Precio:</strong> ${{ item.precio }}</span>
                   </div>
 
@@ -165,7 +183,7 @@
                         <tr>
                           <th>Color</th>
                           <th>Saco</th>
-                          <th>Pantalón</th>
+                          <th>Pantalon</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -177,9 +195,9 @@
                           </tr>
                         {% empty %}
                           <tr>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -187,14 +205,14 @@
                   </div>
                 </article>
               {% empty %}
-                <p class="empty-note">Todavía no hay trajes importados cargados.</p>
+                <p class="empty-note">Todavia no hay trajes importados cargados.</p>
               {% endfor %}
             </div>
 
             <div class="detail-actions">
               <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
               <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
-                Volver al catálogo
+                Volver al catalogo
               </button>
             </div>
           </div>
@@ -202,25 +220,44 @@
           <div id="nacionalView" style="display:none;">
             <div class="detail-head">
               <div class="detail-line"></div>
-              <p class="detail-title">LÍNEA NACIONAL</p>
+              <p class="detail-title">LINEA NACIONAL</p>
               <div class="detail-line"></div>
             </div>
 
             <div class="catalog-stack">
               {% for item in trajes_nacionales %}
                 <article class="catalog-entry">
-                  <div class="detail-images">
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_modelo.url }}" alt="Traje línea nacional modelando">
+                  <div class="product-gallery" data-autoplay-ms="5000">
+                    <div class="product-gallery-frame">
+                      <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
+                        <span aria-hidden="true">&#8249;</span>
+                      </button>
+                      <button type="button" class="gallery-nav gallery-next" aria-label="Foto siguiente">
+                        <span aria-hidden="true">&#8250;</span>
+                      </button>
+
+                      <div class="product-slide is-active">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_modelo.url }}" alt="Traje linea nacional modelando">
+                        </div>
+                      </div>
+
+                      <div class="product-slide">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_colgado.url }}" alt="Traje linea nacional colgado">
+                        </div>
+                      </div>
                     </div>
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_colgado.url }}" alt="Traje línea nacional colgado">
+
+                    <div class="gallery-dots" role="tablist" aria-label="Fotos del producto">
+                      <button type="button" class="gallery-dot is-active" aria-label="Ver foto 1"></button>
+                      <button type="button" class="gallery-dot" aria-label="Ver foto 2"></button>
                     </div>
                   </div>
 
                   <div class="detail-meta">
                     <span><strong>Tela:</strong> {{ item.tela }}</span>
-                    <span class="detail-dot">·</span>
+                    <span class="detail-dot">&middot;</span>
                     <span><strong>Precio:</strong> ${{ item.precio }}</span>
                   </div>
 
@@ -235,7 +272,7 @@
                         <tr>
                           <th>Color</th>
                           <th>Saco</th>
-                          <th>Pantalón</th>
+                          <th>Pantalon</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -247,9 +284,9 @@
                           </tr>
                         {% empty %}
                           <tr>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -257,14 +294,14 @@
                   </div>
                 </article>
               {% empty %}
-                <p class="empty-note">Todavía no hay trajes nacionales cargados.</p>
+                <p class="empty-note">Todavia no hay trajes nacionales cargados.</p>
               {% endfor %}
             </div>
 
             <div class="detail-actions">
               <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
               <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
-                Volver al catálogo
+                Volver al catalogo
               </button>
             </div>
           </div>
@@ -279,12 +316,31 @@
             <div class="catalog-stack">
               {% for item in camisas %}
                 <article class="catalog-entry">
-                  <div class="detail-images">
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_modelo.url }}" alt="Camisa modelando">
+                  <div class="product-gallery" data-autoplay-ms="5000">
+                    <div class="product-gallery-frame">
+                      <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
+                        <span aria-hidden="true">&#8249;</span>
+                      </button>
+                      <button type="button" class="gallery-nav gallery-next" aria-label="Foto siguiente">
+                        <span aria-hidden="true">&#8250;</span>
+                      </button>
+
+                      <div class="product-slide is-active">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_modelo.url }}" alt="Camisa modelando">
+                        </div>
+                      </div>
+
+                      <div class="product-slide">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_colgado.url }}" alt="Camisa colgada">
+                        </div>
+                      </div>
                     </div>
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_colgado.url }}" alt="Camisa colgada">
+
+                    <div class="gallery-dots" role="tablist" aria-label="Fotos del producto">
+                      <button type="button" class="gallery-dot is-active" aria-label="Ver foto 1"></button>
+                      <button type="button" class="gallery-dot" aria-label="Ver foto 2"></button>
                     </div>
                   </div>
 
@@ -313,8 +369,8 @@
                           </tr>
                         {% empty %}
                           <tr>
-                            <td>—</td>
-                            <td>—</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -322,14 +378,14 @@
                   </div>
                 </article>
               {% empty %}
-                <p class="empty-note">Todavía no hay camisas cargadas.</p>
+                <p class="empty-note">Todavia no hay camisas cargadas.</p>
               {% endfor %}
             </div>
 
             <div class="detail-actions">
               <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
               <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
-                Volver al catálogo
+                Volver al catalogo
               </button>
             </div>
           </div>
@@ -344,12 +400,31 @@
             <div class="catalog-stack">
               {% for item in zapatos %}
                 <article class="catalog-entry">
-                  <div class="detail-images">
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_modelo.url }}" alt="Zapato modelando">
+                  <div class="product-gallery" data-autoplay-ms="5000">
+                    <div class="product-gallery-frame">
+                      <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
+                        <span aria-hidden="true">&#8249;</span>
+                      </button>
+                      <button type="button" class="gallery-nav gallery-next" aria-label="Foto siguiente">
+                        <span aria-hidden="true">&#8250;</span>
+                      </button>
+
+                      <div class="product-slide is-active">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_modelo.url }}" alt="Zapato modelando">
+                        </div>
+                      </div>
+
+                      <div class="product-slide">
+                        <div class="detail-image-card">
+                          <img src="{{ item.foto_colgado.url }}" alt="Zapato detalle">
+                        </div>
+                      </div>
                     </div>
-                    <div class="detail-image-card">
-                      <img src="{{ item.foto_colgado.url }}" alt="Zapato detalle">
+
+                    <div class="gallery-dots" role="tablist" aria-label="Fotos del producto">
+                      <button type="button" class="gallery-dot is-active" aria-label="Ver foto 1"></button>
+                      <button type="button" class="gallery-dot" aria-label="Ver foto 2"></button>
                     </div>
                   </div>
 
@@ -378,8 +453,8 @@
                           </tr>
                         {% empty %}
                           <tr>
-                            <td>—</td>
-                            <td>—</td>
+                            <td>&mdash;</td>
+                            <td>&mdash;</td>
                           </tr>
                         {% endfor %}
                       </tbody>
@@ -387,14 +462,14 @@
                   </div>
                 </article>
               {% empty %}
-                <p class="empty-note">Todavía no hay zapatos cargados.</p>
+                <p class="empty-note">Todavia no hay zapatos cargados.</p>
               {% endfor %}
             </div>
 
             <div class="detail-actions">
               <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
               <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
-                Volver al catálogo
+                Volver al catalogo
               </button>
             </div>
           </div>
@@ -408,14 +483,14 @@
                   {{ combo.nombre }}
                 </button>
               {% empty %}
-                <p class="empty-note">Todavía no hay combos cargados.</p>
+                <p class="empty-note">Todavia no hay combos cargados.</p>
               {% endfor %}
             </div>
 
             <div class="catalog-actions">
               <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
               <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
-                Volver al catálogo
+                Volver al catalogo
               </button>
             </div>
           </div>
@@ -441,13 +516,13 @@
               {% endif %}
 
               <div class="detail-table-wrap">
-                <p class="detail-table-title">Precio por línea</p>
+                <p class="detail-table-title">Precio por linea</p>
                 <table class="detail-table">
                   <thead>
                     <tr>
                       <th>Importada</th>
                       <th>Nacional</th>
-                      <th>Niños</th>
+                      <th>Ninos</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -481,6 +556,71 @@
   {% include "includes/social_links.html" %}
 
   <script>
+    function initProductGalleries() {
+      document.querySelectorAll(".product-gallery").forEach(function(gallery) {
+        const slides = Array.from(gallery.querySelectorAll(".product-slide"));
+        const dots = Array.from(gallery.querySelectorAll(".gallery-dot"));
+        const prev = gallery.querySelector(".gallery-prev");
+        const next = gallery.querySelector(".gallery-next");
+        const autoplayMs = Number(gallery.dataset.autoplayMs || 5000);
+        let currentIndex = 0;
+        let intervalId = null;
+
+        function renderSlide(index) {
+          currentIndex = (index + slides.length) % slides.length;
+
+          slides.forEach(function(slide, slideIndex) {
+            slide.classList.toggle("is-active", slideIndex === currentIndex);
+          });
+
+          dots.forEach(function(dot, dotIndex) {
+            dot.classList.toggle("is-active", dotIndex === currentIndex);
+          });
+        }
+
+        function stopAutoplay() {
+          if (intervalId) {
+            window.clearInterval(intervalId);
+            intervalId = null;
+          }
+        }
+
+        function startAutoplay() {
+          stopAutoplay();
+          intervalId = window.setInterval(function() {
+            renderSlide(currentIndex + 1);
+          }, autoplayMs);
+        }
+
+        if (prev) {
+          prev.addEventListener("click", function() {
+            renderSlide(currentIndex - 1);
+            startAutoplay();
+          });
+        }
+
+        if (next) {
+          next.addEventListener("click", function() {
+            renderSlide(currentIndex + 1);
+            startAutoplay();
+          });
+        }
+
+        dots.forEach(function(dot, dotIndex) {
+          dot.addEventListener("click", function() {
+            renderSlide(dotIndex);
+            startAutoplay();
+          });
+        });
+
+        gallery.addEventListener("mouseenter", stopAutoplay);
+        gallery.addEventListener("mouseleave", startAutoplay);
+
+        renderSlide(0);
+        startAutoplay();
+      });
+    }
+
     function hideAllViews() {
       document.getElementById("homeView").style.display = "none";
       document.getElementById("catalogView").style.display = "none";
@@ -548,6 +688,10 @@
     function backToCombosMenu() {
       openCombosMenu();
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      initProductGalleries();
+    });
   </script>
 </body>
 </html>
