@@ -4,12 +4,12 @@ from django.db import models
 
 class ConfiguracionSitio(models.Model):
     whatsapp_url = models.URLField(
-        default="https://wa.me/5492213540416",
+        default="https://wa.me/message/IXNVRCQIC6YFF1",
         help_text="Enlace completo de WhatsApp que se muestra en la web publica.",
     )
     instagram_url = models.URLField(
         blank=True,
-        default="",
+        default="https://www.instagram.com/abito.gonnet/",
         help_text="Enlace completo del Instagram oficial.",
     )
     direccion_post_reserva = models.CharField(
