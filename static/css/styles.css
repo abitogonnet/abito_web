@@ -164,19 +164,6 @@ a{
   font-size: clamp(2.4rem, 3.6vw, 3.8rem);
 }
 
-.admin-shortcut{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: #111111;
-  color: #ffffff;
-  font-size: .95rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
 .hero-right{
   position: relative;
   height: 100%;

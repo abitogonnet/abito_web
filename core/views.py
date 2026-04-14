@@ -1,4 +1,3 @@
-from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from catalogo.models import (
     Camisa,
@@ -51,7 +50,3 @@ def home(request):
         "combos": combos,
     })
 
-
-@staff_member_required(login_url="/admin/login/")
-def panel_privado(request):
-    return render(request, "core/panel_privado.html")
