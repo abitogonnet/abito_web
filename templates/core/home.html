@@ -481,23 +481,7 @@
     </section>
   </main>
 
-  <div class="social-float-stack">
-    <a
-      class="social-float social-whatsapp"
-      href="{% if site_config and site_config.whatsapp_url %}{{ site_config.whatsapp_url }}{% else %}https://wa.me/message/IXNVRCQIC6YFF1{% endif %}"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="WhatsApp"
-    >W</a>
-
-    <a
-      class="social-float social-instagram"
-      href="{% if site_config and site_config.instagram_url %}{{ site_config.instagram_url }}{% else %}https://www.instagram.com/abito.gonnet/{% endif %}"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Instagram"
-    >IG</a>
-  </div>
+  {% include "includes/social_links.html" %}
 
   <script>
     function hideAllViews() {
@@ -570,3 +554,4 @@
   </script>
 </body>
 </html>
+
