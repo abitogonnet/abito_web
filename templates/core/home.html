@@ -1,0 +1,572 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABITO</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <main class="hero-shell">
+    <section class="hero-card">
+      <div class="hero-left">
+        <div class="brand-top">
+          <div class="brand-row">
+            <img class="brand-logo" src="{% static 'img/logo_abito.png' %}" alt="Logo ABITO">
+
+            <div class="brand-text">
+              <h1 class="brand-name">ABITO</h1>
+              <p class="brand-location">Gonnet · La Plata</p>
+            </div>
+          </div>
+
+          {% if request.user.is_staff %}
+            <a class="admin-shortcut" href="{% url 'panel_privado' %}">Panel privado</a>
+          {% endif %}
+        </div>
+
+        <div class="hero-copy">
+          <div id="homeView">
+            <h2 class="hero-title">Encontrá el outfit ideal para tu próximo evento</h2>
+
+            <div class="hero-actions">
+              <button type="button" class="btn btn-dark btn-reset" onclick="openCatalog()">
+                Ver catálogo
+              </button>
+
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-light">Reservar visita</a>
+            </div>
+
+            <p class="hero-note">
+              Mostramos el catálogo, precios reales y talles disponibles. La dirección
+              exacta se comparte solamente después de confirmar la visita.
+            </p>
+
+            <div class="support-grid">
+              <article class="support-card">
+                <p class="support-kicker">Cómo funciona</p>
+                <h3>1. Mirás el catálogo</h3>
+                <p>Explorás líneas, camisas, zapatos y combos para llegar con una idea clara.</p>
+              </article>
+
+              <article class="support-card">
+                <p class="support-kicker">Pasos para alquilar</p>
+                <h3>2. Reservás tu visita</h3>
+                <p>Elegís fecha, horario y completás tus datos. La confirmación es automática.</p>
+              </article>
+
+              <article class="support-card">
+                <p class="support-kicker">Preguntas frecuentes</p>
+                <h3>3. Venís al local</h3>
+                <p>La dirección exacta se envía al confirmar. La prueba presencial define el look final.</p>
+              </article>
+
+              <article class="support-card">
+                <p class="support-kicker">Medios de pago</p>
+                <h3>4. Confirmás con ABITO</h3>
+                <p>Coordinás los detalles finales directamente con el local y el canal oficial de WhatsApp.</p>
+              </article>
+            </div>
+
+            <div class="faq-list">
+              <article class="faq-item">
+                <h3>¿Se puede alquilar online?</h3>
+                <p>No. La web está pensada para mostrar opciones y llevar la consulta a una visita presencial.</p>
+              </article>
+
+              <article class="faq-item">
+                <h3>¿Se ve la dirección antes de reservar?</h3>
+                <p>No. La ubicación exacta se informa después de confirmar la visita.</p>
+              </article>
+
+              <article class="faq-item">
+                <h3>¿Qué pasa si un horario se ocupa?</h3>
+                <p>La agenda vuelve a validar el cupo al guardar, así que nunca se confirma un turno sin lugar real.</p>
+              </article>
+            </div>
+          </div>
+
+          <div id="catalogView" style="display:none;">
+            <p class="catalog-label">CATÁLOGO</p>
+            <p class="section-intro">
+              Los trajes se organizan por línea. Camisas, zapatos y combos acompañan la elección.
+            </p>
+
+            <div class="catalog-menu">
+              <button type="button" class="catalog-link catalog-btn" onclick="openImportados()">
+                Línea importada
+              </button>
+
+              <button type="button" class="catalog-link catalog-btn" onclick="openNacional()">
+                Línea nacional
+              </button>
+
+              <button type="button" class="catalog-link catalog-btn" onclick="openCamisas()">
+                Camisas
+              </button>
+
+              <button type="button" class="catalog-link catalog-btn" onclick="openZapatos()">
+                Zapatos
+              </button>
+
+              <button type="button" class="catalog-link catalog-btn" onclick="openCombosMenu()">
+                Combos
+              </button>
+            </div>
+
+            <p class="catalog-side-note">
+              Los accesorios forman parte de la propuesta comercial y se muestran principalmente dentro de los combos.
+            </p>
+
+            <div class="catalog-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="closeCatalog()">
+                Volver
+              </button>
+            </div>
+          </div>
+
+          <div id="importadosView" style="display:none;">
+            <div class="detail-head">
+              <div class="detail-line"></div>
+              <p class="detail-title">LÍNEA IMPORTADA</p>
+              <div class="detail-line"></div>
+            </div>
+
+            <div class="catalog-stack">
+              {% for item in trajes_importados %}
+                <article class="catalog-entry">
+                  <div class="detail-images">
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_modelo.url }}" alt="Traje línea importada modelando">
+                    </div>
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_colgado.url }}" alt="Traje línea importada colgado">
+                    </div>
+                  </div>
+
+                  <div class="detail-meta">
+                    <span><strong>Tela:</strong> {{ item.tela }}</span>
+                    <span class="detail-dot">·</span>
+                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
+                  </div>
+
+                  {% if item.descripcion %}
+                    <p class="detail-description">{{ item.descripcion }}</p>
+                  {% endif %}
+
+                  <div class="detail-table-wrap">
+                    <p class="detail-table-title">Talles disponibles por color</p>
+                    <table class="detail-table">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Saco</th>
+                          <th>Pantalón</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for fila in item.talles.all %}
+                          <tr>
+                            <td>{{ fila.color }}</td>
+                            <td>{{ fila.talle_saco }}</td>
+                            <td>{{ fila.talle_pantalon }}</td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+              {% empty %}
+                <p class="empty-note">Todavía no hay trajes importados cargados.</p>
+              {% endfor %}
+            </div>
+
+            <div class="detail-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
+                Volver al catálogo
+              </button>
+            </div>
+          </div>
+
+          <div id="nacionalView" style="display:none;">
+            <div class="detail-head">
+              <div class="detail-line"></div>
+              <p class="detail-title">LÍNEA NACIONAL</p>
+              <div class="detail-line"></div>
+            </div>
+
+            <div class="catalog-stack">
+              {% for item in trajes_nacionales %}
+                <article class="catalog-entry">
+                  <div class="detail-images">
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_modelo.url }}" alt="Traje línea nacional modelando">
+                    </div>
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_colgado.url }}" alt="Traje línea nacional colgado">
+                    </div>
+                  </div>
+
+                  <div class="detail-meta">
+                    <span><strong>Tela:</strong> {{ item.tela }}</span>
+                    <span class="detail-dot">·</span>
+                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
+                  </div>
+
+                  {% if item.descripcion %}
+                    <p class="detail-description">{{ item.descripcion }}</p>
+                  {% endif %}
+
+                  <div class="detail-table-wrap">
+                    <p class="detail-table-title">Talles disponibles por color</p>
+                    <table class="detail-table">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Saco</th>
+                          <th>Pantalón</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for fila in item.talles.all %}
+                          <tr>
+                            <td>{{ fila.color }}</td>
+                            <td>{{ fila.talle_saco }}</td>
+                            <td>{{ fila.talle_pantalon }}</td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>—</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+              {% empty %}
+                <p class="empty-note">Todavía no hay trajes nacionales cargados.</p>
+              {% endfor %}
+            </div>
+
+            <div class="detail-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
+                Volver al catálogo
+              </button>
+            </div>
+          </div>
+
+          <div id="camisasView" style="display:none;">
+            <div class="detail-head">
+              <div class="detail-line"></div>
+              <p class="detail-title">CAMISAS</p>
+              <div class="detail-line"></div>
+            </div>
+
+            <div class="catalog-stack">
+              {% for item in camisas %}
+                <article class="catalog-entry">
+                  <div class="detail-images">
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_modelo.url }}" alt="Camisa modelando">
+                    </div>
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_colgado.url }}" alt="Camisa colgada">
+                    </div>
+                  </div>
+
+                  <div class="detail-meta">
+                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
+                  </div>
+
+                  {% if item.descripcion %}
+                    <p class="detail-description">{{ item.descripcion }}</p>
+                  {% endif %}
+
+                  <div class="detail-table-wrap">
+                    <p class="detail-table-title">Talles disponibles por color</p>
+                    <table class="detail-table">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Talle</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for fila in item.talles.all %}
+                          <tr>
+                            <td>{{ fila.color }}</td>
+                            <td>{{ fila.talle }}</td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td>—</td>
+                            <td>—</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+              {% empty %}
+                <p class="empty-note">Todavía no hay camisas cargadas.</p>
+              {% endfor %}
+            </div>
+
+            <div class="detail-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
+                Volver al catálogo
+              </button>
+            </div>
+          </div>
+
+          <div id="zapatosView" style="display:none;">
+            <div class="detail-head">
+              <div class="detail-line"></div>
+              <p class="detail-title">ZAPATOS</p>
+              <div class="detail-line"></div>
+            </div>
+
+            <div class="catalog-stack">
+              {% for item in zapatos %}
+                <article class="catalog-entry">
+                  <div class="detail-images">
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_modelo.url }}" alt="Zapato modelando">
+                    </div>
+                    <div class="detail-image-card">
+                      <img src="{{ item.foto_colgado.url }}" alt="Zapato detalle">
+                    </div>
+                  </div>
+
+                  <div class="detail-meta">
+                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
+                  </div>
+
+                  {% if item.descripcion %}
+                    <p class="detail-description">{{ item.descripcion }}</p>
+                  {% endif %}
+
+                  <div class="detail-table-wrap">
+                    <p class="detail-table-title">Talles disponibles por color</p>
+                    <table class="detail-table">
+                      <thead>
+                        <tr>
+                          <th>Color</th>
+                          <th>Talle</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for fila in item.talles.all %}
+                          <tr>
+                            <td>{{ fila.color }}</td>
+                            <td>{{ fila.talle }}</td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td>—</td>
+                            <td>—</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </article>
+              {% empty %}
+                <p class="empty-note">Todavía no hay zapatos cargados.</p>
+              {% endfor %}
+            </div>
+
+            <div class="detail-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
+                Volver al catálogo
+              </button>
+            </div>
+          </div>
+
+          <div id="combosMenuView" style="display:none;">
+            <p class="catalog-label">COMBOS</p>
+
+            <div class="catalog-menu">
+              {% for combo in combos %}
+                <button type="button" class="catalog-link catalog-btn" onclick="openCombo('{{ combo.id }}')">
+                  {{ combo.nombre }}
+                </button>
+              {% empty %}
+                <p class="empty-note">Todavía no hay combos cargados.</p>
+              {% endfor %}
+            </div>
+
+            <div class="catalog-actions">
+              <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+              <button type="button" class="btn btn-light btn-reset" onclick="backToCatalog()">
+                Volver al catálogo
+              </button>
+            </div>
+          </div>
+
+          {% for combo in combos %}
+            <div id="comboView{{ combo.id }}" class="combo-dynamic-view" style="display:none;">
+              <div class="detail-head">
+                <div class="detail-line"></div>
+                <p class="detail-title">{{ combo.nombre|upper }}</p>
+                <div class="detail-line"></div>
+              </div>
+
+              <div class="detail-images single-photo">
+                <div class="detail-image-card">
+                  <img src="{{ combo.foto.url }}" alt="{{ combo.nombre }}">
+                </div>
+              </div>
+
+              {% if combo.descripcion %}
+                <div class="combo-desc-block">
+                  <p class="combo-desc">{{ combo.descripcion }}</p>
+                </div>
+              {% endif %}
+
+              <div class="detail-table-wrap">
+                <p class="detail-table-title">Precio por línea</p>
+                <table class="detail-table">
+                  <thead>
+                    <tr>
+                      <th>Importada</th>
+                      <th>Nacional</th>
+                      <th>Niños</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>${{ combo.precio_importado }}</td>
+                      <td>${{ combo.precio_nacional }}</td>
+                      <td>${{ combo.precio_ninos }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="detail-actions">
+                <a href="{% url 'visitas:reservar' %}" class="btn btn-dark">Reservar visita</a>
+                <button type="button" class="btn btn-light btn-reset" onclick="backToCombosMenu()">
+                  Volver a combos
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <img src="{% static 'img/hero_abito.jpg' %}" alt="ABITO - trajes para eventos">
+        <div class="hero-fade"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="social-float-stack">
+    <a
+      class="social-float social-whatsapp"
+      href="{% if site_config and site_config.whatsapp_url %}{{ site_config.whatsapp_url }}{% else %}https://wa.me/5492213540416{% endif %}"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="WhatsApp"
+    >W</a>
+
+    <a
+      class="social-float social-instagram{% if not site_config or not site_config.instagram_url %} is-disabled{% endif %}"
+      href="{% if site_config and site_config.instagram_url %}{{ site_config.instagram_url }}{% else %}#{% endif %}"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Instagram"
+    >IG</a>
+  </div>
+
+  <script>
+    function hideAllViews() {
+      document.getElementById("homeView").style.display = "none";
+      document.getElementById("catalogView").style.display = "none";
+      document.getElementById("importadosView").style.display = "none";
+      document.getElementById("nacionalView").style.display = "none";
+      document.getElementById("camisasView").style.display = "none";
+      document.getElementById("zapatosView").style.display = "none";
+      document.getElementById("combosMenuView").style.display = "none";
+
+      document.querySelectorAll(".combo-dynamic-view").forEach(function(el) {
+        el.style.display = "none";
+      });
+    }
+
+    function showFlex(id) {
+      document.getElementById(id).style.display = "flex";
+      document.getElementById(id).style.flexDirection = "column";
+      document.getElementById(id).style.gap = "22px";
+    }
+
+    function openCatalog() {
+      hideAllViews();
+      showFlex("catalogView");
+    }
+
+    function closeCatalog() {
+      hideAllViews();
+      document.getElementById("homeView").style.display = "block";
+    }
+
+    function openImportados() {
+      hideAllViews();
+      showFlex("importadosView");
+    }
+
+    function openNacional() {
+      hideAllViews();
+      showFlex("nacionalView");
+    }
+
+    function openCamisas() {
+      hideAllViews();
+      showFlex("camisasView");
+    }
+
+    function openZapatos() {
+      hideAllViews();
+      showFlex("zapatosView");
+    }
+
+    function openCombosMenu() {
+      hideAllViews();
+      showFlex("combosMenuView");
+    }
+
+    function openCombo(comboId) {
+      hideAllViews();
+      showFlex("comboView" + comboId);
+    }
+
+    function backToCatalog() {
+      openCatalog();
+    }
+
+    function backToCombosMenu() {
+      openCombosMenu();
+    }
+  </script>
+</body>
+</html>
