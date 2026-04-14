@@ -61,7 +61,7 @@ a{
 .brand-top{
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
 }
 
@@ -356,6 +356,27 @@ a{
   margin: 0 auto;
 }
 
+.product-gallery{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.product-gallery-frame{
+  position: relative;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.product-slide{
+  display: none;
+}
+
+.product-slide.is-active{
+  display: block;
+}
+
 .detail-image-card{
   border-radius: 16px;
   overflow: hidden;
@@ -368,6 +389,59 @@ a{
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.gallery-nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.82);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.gallery-nav span{
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.gallery-prev{
+  left: 14px;
+}
+
+.gallery-next{
+  right: 14px;
+}
+
+.gallery-dots{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.gallery-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: none;
+  background: #d1cabf;
+  cursor: pointer;
+  padding: 0;
+}
+
+.gallery-dot.is-active{
+  width: 28px;
+  background: #111111;
 }
 
 .detail-meta{
@@ -655,6 +729,19 @@ a{
   .social-float{
     width: 62px;
     height: 62px;
+  }
+
+  .gallery-nav{
+    width: 40px;
+    height: 40px;
+  }
+
+  .gallery-prev{
+    left: 10px;
+  }
+
+  .gallery-next{
+    right: 10px;
   }
 }
 
