@@ -1,5 +1,7 @@
 from django.db import models
 
+from core.models import ConfiguracionSitio
+
 
 class Traje(models.Model):
     LINEA_IMPORTADA = "IMPORTADO"
@@ -195,3 +197,11 @@ class Combo(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class ConfiguracionVisitas(ConfiguracionSitio):
+    class Meta:
+        proxy = True
+        app_label = "catalogo"
+        verbose_name = "Direccion de visitas"
+        verbose_name_plural = "Direccion de visitas"
