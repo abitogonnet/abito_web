@@ -947,6 +947,45 @@ a{
   line-height: 1.5;
 }
 
+.preferences-stack{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.preference-card{
+  padding: 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e4ddd3;
+}
+
+.preference-title{
+  margin: 0 0 14px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: #1f1b18;
+}
+
+.preference-size-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.summary-preferences-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-preference-item{
+  margin: 0;
+  color: #3d3934;
+  line-height: 1.5;
+}
+
 .step-panel{
   animation: fadeInSoft .22s ease;
 }
@@ -1125,6 +1164,10 @@ a{
 
   .horario-pill{
     min-width: 96px;
+  }
+
+  .preference-size-grid{
+    grid-template-columns: 1fr;
   }
 
   .panel-shell{

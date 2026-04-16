@@ -22,21 +22,21 @@
 
             <div class="brand-text">
               <h1 class="brand-name">ABITO</h1>
-              <p class="brand-location">Gonnet · La Plata</p>
+              <p class="brand-location">Gonnet &middot; La Plata</p>
             </div>
           </div>
         </div>
 
         <div class="hero-copy">
           <p class="catalog-label">VISITA CONFIRMADA</p>
-          <h2 class="hero-title hero-title-small">Tu reserva ya quedó registrada</h2>
+          <h2 class="hero-title hero-title-small">Tu reserva ya quedo registrada</h2>
 
           <div class="reserve-card confirm-card">
             <p class="confirm-message">
               {% if site_config and site_config.mensaje_confirmacion %}
                 {{ site_config.mensaje_confirmacion }}
               {% else %}
-                Tu visita quedó confirmada. Si necesitás reprogramar, escribinos por WhatsApp.
+                Tu visita quedo confirmada. Si necesitas reprogramar, escribinos por WhatsApp.
               {% endif %}
             </p>
 
@@ -48,13 +48,27 @@
               <p><strong>Horario:</strong> {{ visita.hora_visita|time:"H:i" }}</p>
             </div>
 
+            {% if visita.preferencias_ambos.all %}
+              <div class="reserve-summary">
+                <p><strong>Ambos seleccionados:</strong></p>
+                <div class="summary-preferences-list">
+                  {% for preferencia in visita.preferencias_ambos.all %}
+                    <p class="summary-preference-item">
+                      {{ preferencia.linea }} - {{ preferencia.tela }} - {{ preferencia.color }}
+                      | Saco {{ preferencia.talle_saco }} | Pantalon {{ preferencia.talle_pantalon }}
+                    </p>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+
             <div class="address-card">
-              <p class="address-label">Dirección para la visita</p>
+              <p class="address-label">Direccion para la visita</p>
               <p class="address-value">
                 {% if site_config and site_config.direccion_post_reserva %}
                   {{ site_config.direccion_post_reserva }}
                 {% else %}
-                  Cargá la dirección exacta desde la configuración del sitio en el panel privado.
+                  Carga la direccion exacta desde la configuracion del sitio en el admin.
                 {% endif %}
               </p>
             </div>

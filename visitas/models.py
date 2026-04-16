@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from catalogo.models import Traje
+
 
 class Visita(models.Model):
     ESTADO_CONFIRMADA = "CONFIRMADA"
@@ -30,6 +32,11 @@ class Visita(models.Model):
     fecha_evento = models.DateField()
     fecha_visita = models.DateField()
     hora_visita = models.TimeField()
+    vio_prendas_catalogo = models.BooleanField(
+        null=True,
+        blank=True,
+        verbose_name="Vio prendas en el catalogo",
+    )
     estado = models.CharField(
         max_length=20,
         choices=ESTADOS,
@@ -49,6 +56,39 @@ class Visita(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.fecha_visita} {self.hora_visita}"
+
+
+class PreferenciaAmboVisita(models.Model):
+    visita = models.ForeignKey(
+        Visita,
+        on_delete=models.CASCADE,
+        related_name="preferencias_ambos",
+    )
+    traje = models.ForeignKey(
+        Traje,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="preferencias_visita",
+    )
+    orden = models.PositiveSmallIntegerField()
+    linea = models.CharField(max_length=20, blank=True, default="")
+    tela = models.CharField(max_length=100, blank=True, default="")
+    color = models.CharField(max_length=50)
+    talle_saco = models.CharField(max_length=50)
+    talle_pantalon = models.CharField(max_length=50)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["orden", "id"]
+        verbose_name = "Preferencia de ambo"
+        verbose_name_plural = "Preferencias de ambos"
+
+    def __str__(self):
+        return (
+            f"Preferencia {self.orden}: {self.linea} - {self.tela} - "
+            f"{self.color} ({self.talle_saco}/{self.talle_pantalon})"
+        )
 
 
 class BloqueoAgenda(models.Model):

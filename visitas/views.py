@@ -131,6 +131,26 @@ def _paso_inicial(form):
         return 1
 
     if any(campo in form.errors for campo in ["nombre", "telefono", "dni"]):
+        return 5
+
+    if any(
+        campo in form.errors
+        for campo in [
+            "vio_prendas_catalogo",
+            "preferencia_1_traje",
+            "preferencia_1_color",
+            "preferencia_1_talle_saco",
+            "preferencia_1_talle_pantalon",
+            "preferencia_2_traje",
+            "preferencia_2_color",
+            "preferencia_2_talle_saco",
+            "preferencia_2_talle_pantalon",
+            "preferencia_3_traje",
+            "preferencia_3_color",
+            "preferencia_3_talle_saco",
+            "preferencia_3_talle_pantalon",
+        ]
+    ):
         return 4
 
     if "hora_visita" in form.errors:
@@ -178,10 +198,23 @@ def reservar(request):
                     visita.estado = Visita.ESTADO_CONFIRMADA
                     visita.origen = Visita.ORIGEN_WEB
                     visita.save()
+                    form.save_preferencias(visita)
                     request.session["ultima_visita_id"] = visita.id
                     return redirect("visitas:confirmada")
     else:
         form = VisitaForm()
+
+    preferencias_catalogo = []
+    for traje in form.trajes_catalogo:
+        preferencias_catalogo.append(
+            {
+                "id": traje.id,
+                "nombre": f"{traje.get_linea_display()} - {traje.tela}",
+                "colores": list(
+                    dict.fromkeys(variante.color for variante in traje.talles.all())
+                ),
+            }
+        )
 
     return render(
         request,
@@ -189,6 +222,7 @@ def reservar(request):
         {
             "form": form,
             "initial_step": _paso_inicial(form),
+            "preferencias_catalogo": preferencias_catalogo,
         },
     )
 
@@ -199,7 +233,10 @@ def confirmada(request):
     if not visita_id:
         return redirect("visitas:reservar")
 
-    visita = get_object_or_404(Visita, pk=visita_id)
+    visita = get_object_or_404(
+        Visita.objects.prefetch_related("preferencias_ambos"),
+        pk=visita_id,
+    )
 
     return render(
         request,
