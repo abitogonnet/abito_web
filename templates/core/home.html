@@ -135,9 +135,9 @@
               <div class="detail-line"></div>
             </div>
 
-            <div class="catalog-stack">
+            <div class="line-products-grid">
               {% for item in trajes_importados %}
-                <article class="catalog-entry">
+                <article class="line-product-card">
                   <div class="product-gallery" data-autoplay-ms="5000">
                     <div class="product-gallery-frame">
                       <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
@@ -166,42 +166,27 @@
                     </div>
                   </div>
 
-                  <div class="detail-meta">
-                    <span><strong>Tela:</strong> {{ item.tela }}</span>
-                    <span class="detail-dot">&middot;</span>
-                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
-                  </div>
+                  <div class="line-product-body">
+                    <p class="line-product-kicker">Ambo importado</p>
+                    <h3 class="line-product-name">{{ item.tela }}</h3>
+                    <p class="line-product-price">${{ item.precio }}</p>
 
-                  {% if item.descripcion %}
-                    <p class="detail-description">{{ item.descripcion }}</p>
-                  {% endif %}
+                    {% if item.descripcion %}
+                      <p class="line-product-description">{{ item.descripcion }}</p>
+                    {% endif %}
 
-                  <div class="detail-table-wrap">
-                    <p class="detail-table-title">Talles disponibles por color</p>
-                    <table class="detail-table">
-                      <thead>
-                        <tr>
-                          <th>Color</th>
-                          <th>Saco</th>
-                          <th>Pantalon</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for fila in item.talles.all %}
-                          <tr>
-                            <td>{{ fila.color }}</td>
-                            <td>{{ fila.talle_saco }}</td>
-                            <td>{{ fila.talle_pantalon }}</td>
-                          </tr>
-                        {% empty %}
-                          <tr>
-                            <td>&mdash;</td>
-                            <td>&mdash;</td>
-                            <td>&mdash;</td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                    <div class="line-product-variants">
+                      {% for fila in item.talles.all %}
+                        <div class="line-variant">
+                          <p class="line-variant-color">Color: {{ fila.color }}</p>
+                          <p class="line-variant-size">Saco {{ fila.talle_saco }} · Pantalon {{ fila.talle_pantalon }}</p>
+                        </div>
+                      {% empty %}
+                        <div class="line-variant line-variant-empty">
+                          <p class="line-variant-color">Sin talles cargados</p>
+                        </div>
+                      {% endfor %}
+                    </div>
                   </div>
                 </article>
               {% empty %}
@@ -224,9 +209,9 @@
               <div class="detail-line"></div>
             </div>
 
-            <div class="catalog-stack">
+            <div class="line-products-grid">
               {% for item in trajes_nacionales %}
-                <article class="catalog-entry">
+                <article class="line-product-card">
                   <div class="product-gallery" data-autoplay-ms="5000">
                     <div class="product-gallery-frame">
                       <button type="button" class="gallery-nav gallery-prev" aria-label="Foto anterior">
@@ -255,42 +240,27 @@
                     </div>
                   </div>
 
-                  <div class="detail-meta">
-                    <span><strong>Tela:</strong> {{ item.tela }}</span>
-                    <span class="detail-dot">&middot;</span>
-                    <span><strong>Precio:</strong> ${{ item.precio }}</span>
-                  </div>
+                  <div class="line-product-body">
+                    <p class="line-product-kicker">Ambo nacional</p>
+                    <h3 class="line-product-name">{{ item.tela }}</h3>
+                    <p class="line-product-price">${{ item.precio }}</p>
 
-                  {% if item.descripcion %}
-                    <p class="detail-description">{{ item.descripcion }}</p>
-                  {% endif %}
+                    {% if item.descripcion %}
+                      <p class="line-product-description">{{ item.descripcion }}</p>
+                    {% endif %}
 
-                  <div class="detail-table-wrap">
-                    <p class="detail-table-title">Talles disponibles por color</p>
-                    <table class="detail-table">
-                      <thead>
-                        <tr>
-                          <th>Color</th>
-                          <th>Saco</th>
-                          <th>Pantalon</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for fila in item.talles.all %}
-                          <tr>
-                            <td>{{ fila.color }}</td>
-                            <td>{{ fila.talle_saco }}</td>
-                            <td>{{ fila.talle_pantalon }}</td>
-                          </tr>
-                        {% empty %}
-                          <tr>
-                            <td>&mdash;</td>
-                            <td>&mdash;</td>
-                            <td>&mdash;</td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                    <div class="line-product-variants">
+                      {% for fila in item.talles.all %}
+                        <div class="line-variant">
+                          <p class="line-variant-color">Color: {{ fila.color }}</p>
+                          <p class="line-variant-size">Saco {{ fila.talle_saco }} · Pantalon {{ fila.talle_pantalon }}</p>
+                        </div>
+                      {% empty %}
+                        <div class="line-variant line-variant-empty">
+                          <p class="line-variant-color">Sin talles cargados</p>
+                        </div>
+                      {% endfor %}
+                    </div>
                   </div>
                 </article>
               {% empty %}
@@ -695,3 +665,4 @@
   </script>
 </body>
 </html>
+
