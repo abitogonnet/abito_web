@@ -1,9 +1,32 @@
 from django.db import models
 
 from core.models import ConfiguracionSitio
+from .image_utils import normalize_uploaded_image
 
 
-class Traje(models.Model):
+class NormalizedImageFieldsMixin(models.Model):
+    normalized_image_fields = ()
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        for field_name in self.normalized_image_fields:
+            image_field = getattr(self, field_name, None)
+            if image_field and not getattr(image_field, "_committed", True):
+                setattr(
+                    self,
+                    field_name,
+                    normalize_uploaded_image(
+                        image_field,
+                        fallback_name=f"{self.__class__.__name__.lower()}-{field_name}",
+                    ),
+                )
+
+        super().save(*args, **kwargs)
+
+
+class Traje(NormalizedImageFieldsMixin):
     LINEA_IMPORTADA = "IMPORTADO"
     LINEA_NACIONAL = "NACIONAL"
     LINEA_UNICO = "UNICO"
@@ -22,6 +45,7 @@ class Traje(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_modelo", "foto_colgado")
 
     class Meta:
         ordering = ["linea", "-creado"]
@@ -47,13 +71,14 @@ class TalleColorTraje(models.Model):
         return f"{self.color} | Saco {self.talle_saco} | Pantalon {self.talle_pantalon}"
 
 
-class Chaleco(models.Model):
+class Chaleco(NormalizedImageFieldsMixin):
     foto_modelo = models.ImageField(upload_to="chalecos/")
     foto_colgado = models.ImageField(upload_to="chalecos/")
     descripcion = models.TextField(blank=True, default="")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_modelo", "foto_colgado")
 
     class Meta:
         ordering = ["-creado"]
@@ -80,13 +105,14 @@ class TalleColorChaleco(models.Model):
         return f"{self.color} | Talle {self.talle}"
 
 
-class Cinturon(models.Model):
+class Cinturon(NormalizedImageFieldsMixin):
     foto_1 = models.ImageField(upload_to="cinturones/")
     foto_2 = models.ImageField(upload_to="cinturones/")
     descripcion = models.TextField(blank=True, default="")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_1", "foto_2")
 
     class Meta:
         ordering = ["-creado"]
@@ -97,13 +123,14 @@ class Cinturon(models.Model):
         return f"Cinturon #{self.id}"
 
 
-class Corbata(models.Model):
+class Corbata(NormalizedImageFieldsMixin):
     foto_1 = models.ImageField(upload_to="corbatas/")
     foto_2 = models.ImageField(upload_to="corbatas/")
     descripcion = models.TextField(blank=True, default="")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_1", "foto_2")
 
     class Meta:
         ordering = ["-creado"]
@@ -114,13 +141,14 @@ class Corbata(models.Model):
         return f"Corbata #{self.id}"
 
 
-class Camisa(models.Model):
+class Camisa(NormalizedImageFieldsMixin):
     foto_modelo = models.ImageField(upload_to="camisas/")
     foto_colgado = models.ImageField(upload_to="camisas/")
     descripcion = models.TextField(blank=True, default="")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_modelo", "foto_colgado")
 
     class Meta:
         ordering = ["-creado"]
@@ -147,13 +175,14 @@ class TalleColorCamisa(models.Model):
         return f"{self.color} | Talle {self.talle}"
 
 
-class Zapato(models.Model):
+class Zapato(NormalizedImageFieldsMixin):
     foto_modelo = models.ImageField(upload_to="zapatos/")
     foto_colgado = models.ImageField(upload_to="zapatos/")
     descripcion = models.TextField(blank=True, default="")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto_modelo", "foto_colgado")
 
     class Meta:
         ordering = ["-creado"]
@@ -180,7 +209,7 @@ class TalleColorZapato(models.Model):
         return f"{self.color} | Talle {self.talle}"
 
 
-class Combo(models.Model):
+class Combo(NormalizedImageFieldsMixin):
     nombre = models.CharField(max_length=100)
     foto = models.ImageField(upload_to="combos/")
     descripcion = models.TextField(blank=True, default="")
@@ -191,6 +220,7 @@ class Combo(models.Model):
     orden = models.PositiveIntegerField(default=1)
     activo = models.BooleanField(default=True)
     creado = models.DateTimeField(auto_now_add=True)
+    normalized_image_fields = ("foto",)
 
     class Meta:
         ordering = ["orden", "id"]
