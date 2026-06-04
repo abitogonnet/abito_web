@@ -12,15 +12,17 @@
 {% endblock %}
 
 {% block content %}
-{{ day_details|json_script:"agendaDayDetails" }}
+{{ day_payloads|json_script:"agendaDayPayloads" }}
+{{ selected_day_key|json_script:"agendaSelectedDayKey" }}
+{{ selected_visit_id|json_script:"agendaSelectedVisitId" }}
 
 <div class="abito-agenda">
   <section class="abito-agenda__hero">
     <div>
       <p class="abito-eyebrow">Visitas ordenadas por dia y horario</p>
-      <h1>Agenda simple para revisar el mes y bajar al detalle al toque</h1>
+      <h1>Elegi un dia con visitas y entra al detalle completo de cada reserva</h1>
       <p class="abito-agenda__lead">
-        Selecciona un dia del calendario para ver nombre, celular, cantidad, fecha del evento y el resto de los datos de cada visita.
+        Primero toca el dia en el calendario. Despues, en la columna de horarios, toca la visita para ver toda su ficha: nombre, celular, cantidad, evento, catalogo visto y observaciones.
       </p>
     </div>
     <div class="abito-agenda__hero-actions">
@@ -64,6 +66,7 @@
             onchange="this.form.submit()"
           >
           <input type="hidden" id="agendaSelectedDate" name="fecha" value="{{ selected_day_key }}">
+          <input type="hidden" id="agendaSelectedVisit" name="visita" value="{{ selected_visit_id }}">
         </div>
       </form>
 
@@ -71,7 +74,7 @@
     </div>
 
     <p class="abito-agenda__hint">
-      En celu podes deslizar el calendario y la tabla para ver todo comodo.
+      Los dias con visitas aparecen como botones marcados. En celular podes deslizar el calendario si hace falta.
     </p>
 
     <div class="abito-calendar-shell">
@@ -88,10 +91,10 @@
       <div class="abito-calendar-grid">
         {% for week in calendar_rows %}
           {% for cell in week %}
-            {% if cell.is_current_month %}
+            {% if cell.is_current_month and cell.has_activity %}
               <button
                 type="button"
-                class="abito-day-card{% if cell.is_selected %} is-selected{% endif %}{% if cell.is_today %} is-today{% endif %}{% if cell.has_activity %} has-activity{% endif %}"
+                class="abito-day-card has-activity{% if cell.is_selected %} is-selected{% endif %}{% if cell.is_today %} is-today{% endif %}"
                 data-agenda-day
                 data-date="{{ cell.date_key }}"
                 data-label="{{ cell.date|date:'l j \\d\\e F \\d\\e Y' }}"
@@ -104,29 +107,30 @@
                     <span class="abito-day-card__tag">Hoy</span>
                   {% endif %}
                 </span>
-
-                {% if cell.has_activity %}
-                  <span class="abito-day-card__summary">{{ cell.visit_count }} visitas</span>
-                  <span class="abito-day-card__summary abito-day-card__summary--soft">
-                    {{ cell.people_count }} personas
-                  </span>
-                  <span class="abito-slot-list">
-                    {% for slot in cell.time_slots %}
-                      <span class="abito-slot-chip">{{ slot.label }} | {{ slot.visit_count }}</span>
-                    {% endfor %}
-                    {% if cell.extra_slot_count %}
-                      <span class="abito-slot-chip is-muted">+{{ cell.extra_slot_count }} horarios</span>
-                    {% endif %}
-                  </span>
-                {% else %}
-                  <span class="abito-day-card__empty">Sin actividad</span>
-                {% endif %}
+                <span class="abito-day-card__summary">{{ cell.visit_count }} visitas</span>
+                <span class="abito-day-card__summary abito-day-card__summary--soft">
+                  {{ cell.people_count }} personas
+                </span>
+                <span class="abito-slot-list">
+                  {% for slot in cell.time_slots %}
+                    <span class="abito-slot-chip">{{ slot.label }} | {{ slot.visit_count }}</span>
+                  {% endfor %}
+                  {% if cell.extra_slot_count %}
+                    <span class="abito-slot-chip is-muted">+{{ cell.extra_slot_count }} horarios</span>
+                  {% endif %}
+                </span>
               </button>
             {% else %}
-              <div class="abito-day-card is-outside-month" aria-hidden="true">
+              <div class="abito-day-card{% if not cell.is_current_month %} is-outside-month{% endif %}{% if cell.is_selected %} is-selected{% endif %}" aria-hidden="{% if not cell.is_current_month %}true{% else %}false{% endif %}">
                 <span class="abito-day-card__top">
                   <span class="abito-day-card__number">{{ cell.day_number }}</span>
+                  {% if cell.is_today %}
+                    <span class="abito-day-card__tag">Hoy</span>
+                  {% endif %}
                 </span>
+                {% if cell.is_current_month %}
+                  <span class="abito-day-card__empty">Sin visitas</span>
+                {% endif %}
               </div>
             {% endif %}
           {% endfor %}
@@ -138,82 +142,191 @@
   <section class="abito-day-detail">
     <div class="abito-day-detail__header">
       <div>
-        <p class="abito-eyebrow">Detalle del dia</p>
+        <p class="abito-eyebrow">Agenda del dia</p>
         <h2 id="agendaDayTitle">{{ selected_day_label|capfirst }}</h2>
       </div>
       <p class="abito-day-detail__count" id="agendaDayCount">
-        {% if detail_rows %}
-          {{ detail_rows|length }} visita{{ detail_rows|length|pluralize }}
-        {% else %}
-          Sin visitas cargadas
-        {% endif %}
+        {{ selected_day_payload.visits|length }} visita{{ selected_day_payload.visits|length|pluralize }}
       </p>
     </div>
 
-    <div id="agendaDayEmpty" class="abito-empty-state{% if detail_rows %} is-hidden{% endif %}">
-      No hay visitas cargadas para este dia.
-    </div>
+    <div class="abito-day-layout">
+      <div class="abito-day-schedule">
+        <div class="abito-day-schedule__header">
+          <div>
+            <p class="abito-eyebrow">Horarios del dia</p>
+            <h3>Selecciona una visita</h3>
+          </div>
+          <p class="abito-day-schedule__note">
+            Cada bloque muestra las visitas cargadas en ese horario.
+          </p>
+        </div>
 
-    <div id="agendaDayTableWrap" class="abito-day-table-wrap{% if not detail_rows %} is-hidden{% endif %}">
-      <table class="abito-day-table">
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Nombre</th>
-            <th>Celular</th>
-            <th>Cantidad</th>
-            <th>Evento</th>
-            <th>Estado</th>
-            <th>Origen</th>
-            <th>Vio catalogo</th>
-            <th>Ambos</th>
-            <th>DNI</th>
-            <th>Observaciones</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="agendaDayTableBody">
-          {% for row in detail_rows %}
-            <tr class="is-{{ row.estado_key }}">
-              <td data-label="Hora"><span class="abito-time-pill">{{ row.hora }}</span></td>
-              <td data-label="Nombre">{{ row.nombre }}</td>
-              <td data-label="Celular">{{ row.telefono }}</td>
-              <td data-label="Cantidad">{{ row.cantidad_personas }}</td>
-              <td data-label="Evento">{{ row.fecha_evento }}</td>
-              <td data-label="Estado"><span class="abito-status-pill">{{ row.estado }}</span></td>
-              <td data-label="Origen">{{ row.origen }}</td>
-              <td data-label="Vio catalogo">{{ row.vio_catalogo }}</td>
-              <td data-label="Ambos">{{ row.cantidad_preferencias }}</td>
-              <td data-label="DNI">{{ row.dni }}</td>
-              <td data-label="Observaciones">{{ row.observaciones }}</td>
-              <td data-label="Abrir"><a href="{{ row.admin_url }}" class="abito-inline-link">Abrir</a></td>
-            </tr>
+        <div id="agendaDaySlots" class="abito-day-slots">
+          {% for slot in selected_day_payload.slots %}
+            <article class="abito-hour-card">
+              <div class="abito-hour-card__head">
+                <span class="abito-time-pill">{{ slot.label }}</span>
+                <span class="abito-hour-card__meta">
+                  {% if slot.visit_count %}
+                    {{ slot.visit_count }} visita{{ slot.visit_count|pluralize }} | {{ slot.people_count }} persona{{ slot.people_count|pluralize }}
+                  {% else %}
+                    Sin visitas
+                  {% endif %}
+                </span>
+              </div>
+
+              <div class="abito-hour-card__body">
+                {% for visit in slot.visits %}
+                  <button
+                    type="button"
+                    class="abito-visit-button{% if visit.id == selected_visit_id %} is-active{% endif %}"
+                    data-agenda-visit
+                    data-visit-id="{{ visit.id }}"
+                  >
+                    <span class="abito-visit-button__name">{{ visit.nombre }}</span>
+                    <span class="abito-visit-button__meta">{{ visit.telefono }}</span>
+                    <span class="abito-visit-button__meta">{{ visit.cantidad_personas }} persona{{ visit.cantidad_personas|pluralize }}</span>
+                  </button>
+                {% empty %}
+                  <div class="abito-hour-card__empty">
+                    No hay visitas en este horario.
+                  </div>
+                {% endfor %}
+              </div>
+            </article>
           {% endfor %}
-        </tbody>
-      </table>
+        </div>
+      </div>
+
+      <div class="abito-visit-detail">
+        <div id="agendaVisitEmpty" class="abito-empty-state{% if selected_visit %} is-hidden{% endif %}">
+          Este dia no tiene visitas cargadas. Cuando selecciones un dia con actividad, aca vas a ver la ficha completa.
+        </div>
+
+        <div id="agendaVisitPanel"{% if not selected_visit %} class="is-hidden"{% endif %}>
+          {% if selected_visit %}
+            <div class="abito-visit-card">
+              <div class="abito-visit-card__hero">
+                <div>
+                  <p class="abito-eyebrow">Detalle de la visita</p>
+                  <h3>{{ selected_visit.nombre }}</h3>
+                  <p class="abito-visit-card__sub">
+                    {{ selected_visit.hora }} | {{ selected_visit.fecha_visita }} | {{ selected_visit.estado }}
+                  </p>
+                </div>
+                <a href="{{ selected_visit.admin_url }}" class="button abito-button-primary">Abrir ficha completa</a>
+              </div>
+
+              <div class="abito-visit-meta-grid">
+                <article class="abito-visit-meta-card">
+                  <span>Celular</span>
+                  <strong>{{ selected_visit.telefono }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>DNI</span>
+                  <strong>{{ selected_visit.dni }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Cantidad</span>
+                  <strong>{{ selected_visit.cantidad_personas }} persona{{ selected_visit.cantidad_personas|pluralize }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Fecha del evento</span>
+                  <strong>{{ selected_visit.fecha_evento }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Fecha de visita</span>
+                  <strong>{{ selected_visit.fecha_visita }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Horario</span>
+                  <strong>{{ selected_visit.hora }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Estado</span>
+                  <strong>{{ selected_visit.estado }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Origen</span>
+                  <strong>{{ selected_visit.origen }}</strong>
+                </article>
+                <article class="abito-visit-meta-card">
+                  <span>Vio catalogo</span>
+                  <strong>{{ selected_visit.vio_catalogo }}</strong>
+                </article>
+              </div>
+
+              <div class="abito-visit-section">
+                <div class="abito-visit-section__header">
+                  <h4>Ambos y talles vistos en catalogo</h4>
+                  <span>{{ selected_visit.cantidad_preferencias }} cargados</span>
+                </div>
+
+                <div id="agendaVisitPreferences" class="abito-preferences-list">
+                  {% for preference in selected_visit.preferencias %}
+                    <article class="abito-preference-card">
+                      <strong>Ambo {{ preference.orden }}</strong>
+                      <p>{{ preference.linea }} - {{ preference.tela }}</p>
+                      <p>Color {{ preference.color }} | Saco {{ preference.talle_saco }} | Pantalon {{ preference.talle_pantalon }}</p>
+                    </article>
+                  {% empty %}
+                    <div class="abito-hour-card__empty">
+                      No cargo ambos o talles para esta visita.
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="abito-visit-section">
+                <div class="abito-visit-section__header">
+                  <h4>Observaciones internas</h4>
+                </div>
+                <div id="agendaVisitNotes" class="abito-note-card">
+                  {{ selected_visit.observaciones }}
+                </div>
+              </div>
+
+              <div class="abito-visit-foot">
+                <span>Creada: {{ selected_visit.creado }}</span>
+                <span>Actualizada: {{ selected_visit.actualizado }}</span>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </section>
 </div>
 
 <script>
   (function() {
-    const detailSource = document.getElementById("agendaDayDetails");
-    if (!detailSource) {
+    const payloadSource = document.getElementById("agendaDayPayloads");
+    if (!payloadSource) {
       return;
     }
 
-    const detailMap = JSON.parse(detailSource.textContent);
-    const dayButtons = Array.from(document.querySelectorAll("[data-agenda-day]"));
-    const titleNode = document.getElementById("agendaDayTitle");
-    const countNode = document.getElementById("agendaDayCount");
-    const emptyNode = document.getElementById("agendaDayEmpty");
-    const tableWrapNode = document.getElementById("agendaDayTableWrap");
-    const tableBodyNode = document.getElementById("agendaDayTableBody");
+    const payloadMap = JSON.parse(payloadSource.textContent);
+    const selectedDaySource = document.getElementById("agendaSelectedDayKey");
+    const selectedVisitSource = document.getElementById("agendaSelectedVisitId");
     const selectedDateInput = document.getElementById("agendaSelectedDate");
+    const selectedVisitInput = document.getElementById("agendaSelectedVisit");
+    const dayButtons = Array.from(document.querySelectorAll("[data-agenda-day]"));
+    const dayTitleNode = document.getElementById("agendaDayTitle");
+    const dayCountNode = document.getElementById("agendaDayCount");
+    const slotContainer = document.getElementById("agendaDaySlots");
+    const visitEmptyNode = document.getElementById("agendaVisitEmpty");
+    const visitPanelNode = document.getElementById("agendaVisitPanel");
     const currentMonth = "{{ month_value }}";
+    const agendaHours = {{ "['17:00', '17:30', '18:00', '18:30', '19:00', '19:30']"|safe }};
+
+    const state = {
+      dayKey: selectedDaySource ? JSON.parse(selectedDaySource.textContent) : "",
+      visitId: selectedVisitSource ? Number(JSON.parse(selectedVisitSource.textContent) || 0) || null : null
+    };
 
     function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, function(char) {
         return {
           "&": "&amp;",
           "<": "&lt;",
@@ -224,74 +337,291 @@
       });
     }
 
-    function renderRows(rows) {
-      return rows.map(function(row) {
+    function pluralize(value, singular, plural) {
+      return Number(value) === 1 ? singular : plural;
+    }
+
+    function buildEmptyDayPayload() {
+      return {
+        visits: [],
+        slots: agendaHours.map(function(hour) {
+          return {
+            hora: hour,
+            label: hour,
+            visit_count: 0,
+            people_count: 0,
+            visits: []
+          };
+        })
+      };
+    }
+
+    function getDayPayload(dayKey) {
+      return payloadMap[dayKey] || buildEmptyDayPayload();
+    }
+
+    function getSelectedDayButton() {
+      return dayButtons.find(function(button) {
+        return button.dataset.date === state.dayKey;
+      }) || null;
+    }
+
+    function updateUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("mes", currentMonth);
+
+      if (state.dayKey) {
+        url.searchParams.set("fecha", state.dayKey);
+      } else {
+        url.searchParams.delete("fecha");
+      }
+
+      if (state.visitId) {
+        url.searchParams.set("visita", state.visitId);
+      } else {
+        url.searchParams.delete("visita");
+      }
+
+      window.history.replaceState({}, "", url);
+    }
+
+    function renderSlots(dayPayload) {
+      slotContainer.innerHTML = dayPayload.slots.map(function(slot) {
+        const visitButtons = slot.visits.map(function(visit) {
+          return [
+            '<button type="button" class="abito-visit-button',
+            visit.id === state.visitId ? ' is-active' : '',
+            '" data-agenda-visit data-visit-id="',
+            escapeHtml(visit.id),
+            '">',
+            '<span class="abito-visit-button__name">',
+            escapeHtml(visit.nombre),
+            '</span>',
+            '<span class="abito-visit-button__meta">',
+            escapeHtml(visit.telefono),
+            '</span>',
+            '<span class="abito-visit-button__meta">',
+            escapeHtml(visit.cantidad_personas),
+            ' ',
+            pluralize(visit.cantidad_personas, 'persona', 'personas'),
+            '</span>',
+            '</button>'
+          ].join("");
+        }).join("");
+
+        const slotMeta = slot.visit_count
+          ? escapeHtml(slot.visit_count) + " " + pluralize(slot.visit_count, "visita", "visitas") + " | " + escapeHtml(slot.people_count) + " " + pluralize(slot.people_count, "persona", "personas")
+          : "Sin visitas";
+
         return [
-          '<tr class="is-' + escapeHtml(row.estado_key) + '">',
-          '<td data-label="Hora"><span class="abito-time-pill">' + escapeHtml(row.hora) + "</span></td>",
-          "<td data-label=\"Nombre\">" + escapeHtml(row.nombre) + "</td>",
-          "<td data-label=\"Celular\">" + escapeHtml(row.telefono) + "</td>",
-          "<td data-label=\"Cantidad\">" + escapeHtml(row.cantidad_personas) + "</td>",
-          "<td data-label=\"Evento\">" + escapeHtml(row.fecha_evento) + "</td>",
-          "<td data-label=\"Estado\"><span class=\"abito-status-pill\">" + escapeHtml(row.estado) + "</span></td>",
-          "<td data-label=\"Origen\">" + escapeHtml(row.origen) + "</td>",
-          "<td data-label=\"Vio catalogo\">" + escapeHtml(row.vio_catalogo) + "</td>",
-          "<td data-label=\"Ambos\">" + escapeHtml(row.cantidad_preferencias) + "</td>",
-          "<td data-label=\"DNI\">" + escapeHtml(row.dni) + "</td>",
-          "<td data-label=\"Observaciones\">" + escapeHtml(row.observaciones) + "</td>",
-          '<td data-label="Abrir"><a class="abito-inline-link" href="' + escapeHtml(row.admin_url) + '">Abrir</a></td>',
-          "</tr>"
+          '<article class="abito-hour-card">',
+          '<div class="abito-hour-card__head">',
+          '<span class="abito-time-pill">',
+          escapeHtml(slot.label),
+          '</span>',
+          '<span class="abito-hour-card__meta">',
+          slotMeta,
+          '</span>',
+          '</div>',
+          '<div class="abito-hour-card__body">',
+          visitButtons || '<div class="abito-hour-card__empty">No hay visitas en este horario.</div>',
+          '</div>',
+          '</article>'
+        ].join("");
+      }).join("");
+
+      slotContainer.querySelectorAll("[data-agenda-visit]").forEach(function(button) {
+        button.addEventListener("click", function() {
+          selectVisit(Number(button.dataset.visitId));
+        });
+      });
+    }
+
+    function renderPreferences(preferences) {
+      if (!preferences.length) {
+        return '<div class="abito-hour-card__empty">No cargo ambos o talles para esta visita.</div>';
+      }
+
+      return preferences.map(function(preference) {
+        return [
+          '<article class="abito-preference-card">',
+          '<strong>Ambo ',
+          escapeHtml(preference.orden),
+          '</strong>',
+          '<p>',
+          escapeHtml(preference.linea),
+          ' - ',
+          escapeHtml(preference.tela),
+          '</p>',
+          '<p>Color ',
+          escapeHtml(preference.color),
+          ' | Saco ',
+          escapeHtml(preference.talle_saco),
+          ' | Pantalon ',
+          escapeHtml(preference.talle_pantalon),
+          '</p>',
+          '</article>'
         ].join("");
       }).join("");
     }
 
-    function updateUrl(dateKey) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("mes", currentMonth);
-      url.searchParams.set("fecha", dateKey);
-      window.history.replaceState({}, "", url);
+    function renderVisit(visit) {
+      if (!visit) {
+        visitPanelNode.innerHTML = "";
+        visitPanelNode.classList.add("is-hidden");
+        visitEmptyNode.classList.remove("is-hidden");
+        return;
+      }
+
+      visitEmptyNode.classList.add("is-hidden");
+      visitPanelNode.classList.remove("is-hidden");
+      visitPanelNode.innerHTML = [
+        '<div class="abito-visit-card">',
+        '<div class="abito-visit-card__hero">',
+        '<div>',
+        '<p class="abito-eyebrow">Detalle de la visita</p>',
+        '<h3>',
+        escapeHtml(visit.nombre),
+        '</h3>',
+        '<p class="abito-visit-card__sub">',
+        escapeHtml(visit.hora),
+        ' | ',
+        escapeHtml(visit.fecha_visita),
+        ' | ',
+        escapeHtml(visit.estado),
+        '</p>',
+        '</div>',
+        '<a href="',
+        escapeHtml(visit.admin_url),
+        '" class="button abito-button-primary">Abrir ficha completa</a>',
+        '</div>',
+        '<div class="abito-visit-meta-grid">',
+        '<article class="abito-visit-meta-card"><span>Celular</span><strong>',
+        escapeHtml(visit.telefono),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>DNI</span><strong>',
+        escapeHtml(visit.dni),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Cantidad</span><strong>',
+        escapeHtml(visit.cantidad_personas),
+        ' ',
+        pluralize(visit.cantidad_personas, 'persona', 'personas'),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Fecha del evento</span><strong>',
+        escapeHtml(visit.fecha_evento),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Fecha de visita</span><strong>',
+        escapeHtml(visit.fecha_visita),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Horario</span><strong>',
+        escapeHtml(visit.hora),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Estado</span><strong>',
+        escapeHtml(visit.estado),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Origen</span><strong>',
+        escapeHtml(visit.origen),
+        '</strong></article>',
+        '<article class="abito-visit-meta-card"><span>Vio catalogo</span><strong>',
+        escapeHtml(visit.vio_catalogo),
+        '</strong></article>',
+        '</div>',
+        '<div class="abito-visit-section">',
+        '<div class="abito-visit-section__header">',
+        '<h4>Ambos y talles vistos en catalogo</h4>',
+        '<span>',
+        escapeHtml(visit.cantidad_preferencias),
+        ' cargados</span>',
+        '</div>',
+        '<div class="abito-preferences-list">',
+        renderPreferences(visit.preferencias || []),
+        '</div>',
+        '</div>',
+        '<div class="abito-visit-section">',
+        '<div class="abito-visit-section__header"><h4>Observaciones internas</h4></div>',
+        '<div class="abito-note-card">',
+        escapeHtml(visit.observaciones || "-"),
+        '</div>',
+        '</div>',
+        '<div class="abito-visit-foot">',
+        '<span>Creada: ',
+        escapeHtml(visit.creado || "-"),
+        '</span>',
+        '<span>Actualizada: ',
+        escapeHtml(visit.actualizado || "-"),
+        '</span>',
+        '</div>',
+        '</div>'
+      ].join("");
     }
 
-    function updateDetail(button) {
-      const dateKey = button.dataset.date;
-      const label = button.dataset.label;
-      const rows = detailMap[dateKey] || [];
-      const count = Number(button.dataset.count || rows.length || 0);
-
-      selectedDateInput.value = dateKey;
-      titleNode.textContent = label.charAt(0).toUpperCase() + label.slice(1);
-
-      if (count === 0) {
-        countNode.textContent = "Sin visitas cargadas";
-      } else if (count === 1) {
-        countNode.textContent = "1 visita";
-      } else {
-        countNode.textContent = count + " visitas";
-      }
-
-      if (rows.length) {
-        tableBodyNode.innerHTML = renderRows(rows);
-        tableWrapNode.classList.remove("is-hidden");
-        emptyNode.classList.add("is-hidden");
-      } else {
-        tableBodyNode.innerHTML = "";
-        tableWrapNode.classList.add("is-hidden");
-        emptyNode.classList.remove("is-hidden");
-      }
-
-      dayButtons.forEach(function(item) {
-        item.classList.toggle("is-selected", item === button);
-        item.setAttribute("aria-pressed", item === button ? "true" : "false");
+    function updateDaySelectionUI() {
+      dayButtons.forEach(function(button) {
+        const isSelected = button.dataset.date === state.dayKey;
+        button.classList.toggle("is-selected", isSelected);
+        button.setAttribute("aria-pressed", isSelected ? "true" : "false");
       });
+    }
 
-      updateUrl(dateKey);
+    function updateDayHeader(dayPayload) {
+      const selectedButton = getSelectedDayButton();
+      if (selectedButton) {
+        const label = selectedButton.dataset.label;
+        const count = Number(selectedButton.dataset.count || dayPayload.visits.length || 0);
+        dayTitleNode.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        dayCountNode.textContent = count + " " + pluralize(count, "visita", "visitas");
+        return;
+      }
+
+      dayTitleNode.textContent = "{{ selected_day_label|capfirst }}";
+      dayCountNode.textContent = dayPayload.visits.length + " " + pluralize(dayPayload.visits.length, "visita", "visitas");
+    }
+
+    function selectVisit(visitId) {
+      const dayPayload = getDayPayload(state.dayKey);
+      const nextVisit = dayPayload.visits.find(function(visit) {
+        return visit.id === visitId;
+      }) || dayPayload.visits[0] || null;
+
+      state.visitId = nextVisit ? nextVisit.id : null;
+      selectedVisitInput.value = state.visitId || "";
+
+      renderSlots(dayPayload);
+      renderVisit(nextVisit);
+      updateUrl();
+    }
+
+    function selectDay(dayKey) {
+      state.dayKey = dayKey;
+      selectedDateInput.value = dayKey;
+
+      const dayPayload = getDayPayload(dayKey);
+      const nextVisit = dayPayload.visits.find(function(visit) {
+        return visit.id === state.visitId;
+      }) || dayPayload.visits[0] || null;
+
+      state.visitId = nextVisit ? nextVisit.id : null;
+      selectedVisitInput.value = state.visitId || "";
+
+      updateDaySelectionUI();
+      updateDayHeader(dayPayload);
+      renderSlots(dayPayload);
+      renderVisit(nextVisit);
+      updateUrl();
     }
 
     dayButtons.forEach(function(button) {
       button.addEventListener("click", function() {
-        updateDetail(button);
+        selectDay(button.dataset.date);
       });
     });
+
+    renderSlots(getDayPayload(state.dayKey));
+    renderVisit(
+      getDayPayload(state.dayKey).visits.find(function(visit) {
+        return visit.id === state.visitId;
+      }) || getDayPayload(state.dayKey).visits[0] || null
+    );
   })();
 </script>
 {% endblock %}

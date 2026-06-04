@@ -70,6 +70,42 @@ body.abito-admin .inline-group {
   box-shadow: var(--abito-shadow);
 }
 
+body.abito-admin .app-list table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.abito-admin .app-list caption {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+body.abito-admin .app-list caption a.section,
+body.abito-admin .app-list caption a:link,
+body.abito-admin .app-list caption a:visited {
+  color: var(--abito-accent-strong);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+body.abito-admin .app-list th,
+body.abito-admin .app-list td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(219, 200, 181, 0.56);
+}
+
+body.abito-admin .app-list tr:last-child th,
+body.abito-admin .app-list tr:last-child td {
+  border-bottom: 0;
+}
+
+body.abito-admin .app-list td a,
+body.abito-admin .app-list th a {
+  color: var(--abito-accent-strong);
+}
+
 body.abito-admin .aligned .form-row,
 body.abito-admin .form-row {
   border-color: rgba(219, 200, 181, 0.7);
@@ -185,6 +221,11 @@ body.abito-admin .abito-button-primary {
   gap: 20px;
 }
 
+.abito-listing-page {
+  display: grid;
+  gap: 20px;
+}
+
 .abito-dashboard__hero,
 .abito-agenda__hero,
 .abito-agenda__calendar-panel,
@@ -255,6 +296,299 @@ body.abito-admin .abito-button-primary {
 .abito-stat-card,
 .abito-admin-list {
   padding: 22px;
+}
+
+.abito-listing-shell {
+  border: 1px solid var(--abito-border);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.94);
+  box-shadow: var(--abito-shadow);
+  padding: 22px;
+}
+
+body.abito-admin.change-list #content-main {
+  width: 100%;
+}
+
+body.abito-admin.change-list #content-main > .object-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  float: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+
+body.abito-admin.change-list #content-main > .object-tools li {
+  float: none;
+  margin: 0;
+}
+
+body.abito-admin.change-list #changelist {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  margin-top: 0;
+}
+
+body.abito-admin.change-list #changelist .changelist-form-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+}
+
+body.abito-admin.change-list #changelist-filter {
+  order: 2;
+  position: static;
+  width: auto;
+  margin: 0;
+  border: 1px solid var(--abito-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--abito-shadow);
+  padding: 18px;
+}
+
+body.abito-admin.change-list #changelist-filter h2,
+body.abito-admin.change-list #changelist-filter h3,
+body.abito-admin.change-list #toolbar,
+body.abito-admin.change-list .paginator,
+body.abito-admin.change-list .actions,
+body.abito-admin.change-list .results,
+body.abito-admin.change-list .date-hierarchy {
+  border-radius: 18px;
+}
+
+body.abito-admin.change-list #changelist-filter h2 {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--abito-accent-strong);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+}
+
+body.abito-admin.change-list #changelist-filter h3 {
+  margin: 16px 0 10px;
+  padding: 0;
+  color: var(--abito-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.abito-admin.change-list #changelist-filter #changelist-filter-extra-actions {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.abito-admin.change-list #changelist-filter ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+body.abito-admin.change-list #changelist-filter li {
+  padding: 10px 12px;
+  border: 1px solid rgba(219, 200, 181, 0.8);
+  border-radius: 14px;
+  background: #fffaf5;
+}
+
+body.abito-admin.change-list #changelist-filter li.selected {
+  border-color: var(--abito-accent);
+  background: linear-gradient(135deg, #fff7ef 0%, #f7ebdf 100%);
+}
+
+body.abito-admin.change-list #changelist-filter a,
+body.abito-admin.change-list #changelist-filter a:link,
+body.abito-admin.change-list #changelist-filter a:visited {
+  color: var(--abito-accent-strong);
+  text-decoration: none;
+}
+
+body.abito-admin.change-list #changelist-filter a:hover {
+  text-decoration: underline;
+}
+
+body.abito-admin.change-list #toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--abito-muted);
+}
+
+body.abito-admin.change-list #toolbar form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+body.abito-admin.change-list #toolbar label {
+  color: var(--abito-muted);
+  font-weight: 700;
+}
+
+body.abito-admin.change-list #toolbar input[type="text"] {
+  min-width: 260px;
+  flex: 1 1 260px;
+  background: #fffaf5;
+}
+
+body.abito-admin.change-list .date-hierarchy {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+body.abito-admin.change-list .date-hierarchy a {
+  color: var(--abito-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+body.abito-admin.change-list .date-hierarchy a:hover {
+  text-decoration: underline;
+}
+
+body.abito-admin.change-list #changelist-form {
+  display: grid;
+  gap: 16px;
+}
+
+body.abito-admin.change-list .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--abito-muted);
+}
+
+body.abito-admin.change-list .actions select {
+  min-width: 180px;
+  background: #fffaf5;
+}
+
+body.abito-admin.change-list .actions .button,
+body.abito-admin.change-list .actions button,
+body.abito-admin.change-list .actions input[type="submit"] {
+  min-height: 42px;
+}
+
+body.abito-admin.change-list .results {
+  overflow: hidden;
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: var(--abito-shadow);
+}
+
+body.abito-admin.change-list #result_list {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.abito-admin.change-list #result_list thead th {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--abito-border);
+  background: rgba(240, 230, 218, 0.72);
+  color: var(--abito-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+body.abito-admin.change-list #result_list thead th a,
+body.abito-admin.change-list #result_list thead th .text a {
+  color: var(--abito-muted);
+  text-decoration: none;
+}
+
+body.abito-admin.change-list #result_list tbody tr {
+  background: rgba(255, 255, 255, 0.98);
+  transition: background 0.18s ease;
+}
+
+body.abito-admin.change-list #result_list tbody tr:hover {
+  background: rgba(251, 243, 234, 0.9);
+}
+
+body.abito-admin.change-list #result_list tbody tr:nth-child(even) {
+  background: rgba(255, 250, 245, 0.92);
+}
+
+body.abito-admin.change-list #result_list td,
+body.abito-admin.change-list #result_list th {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(219, 200, 181, 0.56);
+  vertical-align: middle;
+}
+
+body.abito-admin.change-list #result_list a,
+body.abito-admin.change-list #result_list a:link,
+body.abito-admin.change-list #result_list a:visited {
+  color: var(--abito-accent-strong);
+}
+
+body.abito-admin.change-list #result_list .action-checkbox-column {
+  width: 48px;
+}
+
+body.abito-admin.change-list #result_list .field-__str__,
+body.abito-admin.change-list #result_list .field-nombre {
+  font-weight: 700;
+}
+
+body.abito-admin.change-list .paginator {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--abito-muted);
+}
+
+body.abito-admin.change-list .paginator a,
+body.abito-admin.change-list .paginator a:link,
+body.abito-admin.change-list .paginator a:visited {
+  color: var(--abito-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+body.abito-admin.change-list .paginator a:hover {
+  text-decoration: underline;
+}
+
+body.abito-admin.change-list .changelist-footer {
+  display: block;
+}
+
+body.abito-admin.change-list .help,
+body.abito-admin.change-list .small,
+body.abito-admin.change-list .quiet {
+  color: var(--abito-muted);
 }
 
 .abito-stat-card strong {
@@ -749,6 +1083,14 @@ body.abito-admin .abito-button-primary {
   .abito-day-layout {
     grid-template-columns: 1fr;
   }
+
+  body.abito-admin.change-list #changelist .changelist-form-container {
+    grid-template-columns: 1fr;
+  }
+
+  body.abito-admin.change-list #changelist-filter {
+    order: 0;
+  }
 }
 
 @media (max-width: 720px) {
@@ -758,7 +1100,8 @@ body.abito-admin .abito-button-primary {
   .abito-day-detail,
   .abito-shortcut-card,
   .abito-stat-card,
-  .abito-admin-list {
+  .abito-admin-list,
+  .abito-listing-shell {
     padding: 18px;
     border-radius: 20px;
   }
@@ -815,5 +1158,21 @@ body.abito-admin .abito-button-primary {
   .abito-visit-card__hero .button {
     width: 100%;
     text-align: center;
+  }
+
+  body.abito-admin.change-list #toolbar {
+    padding: 14px;
+  }
+
+  body.abito-admin.change-list #toolbar input[type="text"] {
+    min-width: 0;
+  }
+
+  body.abito-admin.change-list .results {
+    overflow-x: auto;
+  }
+
+  body.abito-admin.change-list #result_list {
+    min-width: 860px;
   }
 }

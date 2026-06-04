@@ -11,6 +11,15 @@ from django.utils.formats import date_format
 
 from .models import BloqueoAgenda, PreferenciaAmboVisita, Visita
 
+AGENDA_SLOT_LABELS = (
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+)
+
 
 def _parse_month(value):
     if not value:
@@ -51,6 +60,64 @@ def _previous_month(current_month):
 
 def _next_month(current_month):
     return (current_month.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+
+def _parse_selected_visit_id(value):
+    if not value:
+        return None
+
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _empty_day_payload():
+    return {
+        "visits": [],
+        "slots": [
+            {
+                "hora": slot_label,
+                "label": slot_label,
+                "visit_count": 0,
+                "people_count": 0,
+                "visits": [],
+            }
+            for slot_label in AGENDA_SLOT_LABELS
+        ],
+    }
+
+
+def _build_day_payload(visits):
+    slot_map = OrderedDict((slot_label, []) for slot_label in AGENDA_SLOT_LABELS)
+
+    for visit in visits:
+        slot_map.setdefault(visit["hora"], [])
+        slot_map[visit["hora"]].append(visit)
+
+    extra_slots = sorted(
+        slot_label
+        for slot_label in slot_map.keys()
+        if slot_label not in AGENDA_SLOT_LABELS
+    )
+    ordered_labels = list(AGENDA_SLOT_LABELS) + extra_slots
+
+    return {
+        "visits": visits,
+        "slots": [
+            {
+                "hora": slot_label,
+                "label": slot_label,
+                "visit_count": len(slot_map[slot_label]),
+                "people_count": sum(
+                    visit["cantidad_personas"]
+                    for visit in slot_map[slot_label]
+                ),
+                "visits": slot_map[slot_label],
+            }
+            for slot_label in ordered_labels
+        ],
+    }
 
 
 class PreferenciaAmboVisitaInline(admin.TabularInline):
@@ -172,12 +239,14 @@ class VisitaAdmin(admin.ModelAdmin):
         current_month = _parse_month(request.GET.get("mes"))
         month_start, month_end = _month_bounds(current_month)
         today = timezone.localdate()
+        selected_visit_id = _parse_selected_visit_id(request.GET.get("visita"))
 
         month_visits = list(
             Visita.objects.filter(
                 fecha_visita__gte=month_start,
                 fecha_visita__lte=month_end,
             )
+            .prefetch_related("preferencias_ambos")
             .annotate(cantidad_preferencias_total=Count("preferencias_ambos"))
             .order_by("fecha_visita", "hora_visita", "creado")
         )
@@ -216,6 +285,19 @@ class VisitaAdmin(admin.ModelAdmin):
             else:
                 vio_catalogo = "Si" if visit.vio_prendas_catalogo else "No"
 
+            preferencias = []
+            for preference in visit.preferencias_ambos.all():
+                preferencias.append(
+                    {
+                        "orden": preference.orden,
+                        "linea": preference.linea or "-",
+                        "tela": preference.tela or "-",
+                        "color": preference.color or "-",
+                        "talle_saco": preference.talle_saco or "-",
+                        "talle_pantalon": preference.talle_pantalon or "-",
+                    }
+                )
+
             day_details[day_key].append(
                 {
                     "id": visit.id,
@@ -232,6 +314,15 @@ class VisitaAdmin(admin.ModelAdmin):
                     "vio_catalogo": vio_catalogo,
                     "cantidad_preferencias": visit.cantidad_preferencias_total,
                     "observaciones": visit.observaciones_internas.strip() or "-",
+                    "creado": date_format(
+                        timezone.localtime(visit.creado),
+                        "j/m/Y H:i",
+                    ),
+                    "actualizado": date_format(
+                        timezone.localtime(visit.actualizado),
+                        "j/m/Y H:i",
+                    ),
+                    "preferencias": preferencias,
                     "admin_url": reverse(
                         "admin:visitas_visita_change",
                         args=[visit.pk],
@@ -291,7 +382,26 @@ class VisitaAdmin(admin.ModelAdmin):
             calendar_rows.append(week_cells)
 
         total_people = sum(item["people_count"] for item in day_summaries.values())
-        detail_rows = day_details.get(selected_day_key, [])
+        day_payloads = {
+            day_key: _build_day_payload(rows)
+            for day_key, rows in day_details.items()
+        }
+        selected_day_payload = day_payloads.get(selected_day_key, _empty_day_payload())
+        selected_visit = None
+
+        if selected_visit_id is not None:
+            selected_visit = next(
+                (
+                    visit
+                    for visit in selected_day_payload["visits"]
+                    if visit["id"] == selected_visit_id
+                ),
+                None,
+            )
+
+        if selected_visit is None and selected_day_payload["visits"]:
+            selected_visit = selected_day_payload["visits"][0]
+
         selected_day_label = date_format(selected_day, "l j \\d\\e F \\d\\e Y")
 
         context = {
@@ -308,8 +418,10 @@ class VisitaAdmin(admin.ModelAdmin):
             "selected_day_key": selected_day_key,
             "selected_day_label": selected_day_label,
             "calendar_rows": calendar_rows,
-            "day_details": dict(day_details),
-            "detail_rows": detail_rows,
+            "day_payloads": day_payloads,
+            "selected_day_payload": selected_day_payload,
+            "selected_visit": selected_visit,
+            "selected_visit_id": selected_visit["id"] if selected_visit else "",
             "month_visit_count": len(month_visits),
             "month_people_count": total_people,
             "active_day_count": len(active_days),

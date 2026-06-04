@@ -35,6 +35,8 @@ class VisitaAdminAgendaTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Agenda de visitas")
+        self.assertContains(response, "Horarios del dia")
+        self.assertContains(response, "Detalle de la visita")
         self.assertContains(response, visita.nombre)
         self.assertContains(response, visita.telefono)
 
@@ -59,6 +61,7 @@ class VisitaAdminAgendaTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Ver agenda")
+        self.assertContains(response, "Listado completo de visitas")
         self.assertContains(response, visita.nombre)
 
     def test_admin_index_exposes_shortcuts(self):
