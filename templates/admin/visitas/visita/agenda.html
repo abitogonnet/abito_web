@@ -1,0 +1,297 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Inicio</a>
+  &rsaquo;
+  <a href="{% url 'admin:app_list' app_label='visitas' %}">Visitas</a>
+  &rsaquo;
+  Agenda
+</div>
+{% endblock %}
+
+{% block content %}
+{{ day_details|json_script:"agendaDayDetails" }}
+
+<div class="abito-agenda">
+  <section class="abito-agenda__hero">
+    <div>
+      <p class="abito-eyebrow">Visitas ordenadas por dia y horario</p>
+      <h1>Agenda simple para revisar el mes y bajar al detalle al toque</h1>
+      <p class="abito-agenda__lead">
+        Selecciona un dia del calendario para ver nombre, celular, cantidad, fecha del evento y el resto de los datos de cada visita.
+      </p>
+    </div>
+    <div class="abito-agenda__hero-actions">
+      <a href="{% url 'admin:visitas_visita_add' %}" class="button abito-button-primary">Nueva visita</a>
+      <a href="{% url 'admin:visitas_bloqueoagenda_add' %}" class="button">Bloquear horario</a>
+      <a href="{{ list_url }}" class="button">Ver listado</a>
+    </div>
+  </section>
+
+  <section class="abito-stats-grid">
+    <article class="abito-stat-card">
+      <span class="abito-stat-card__label">Visitas del mes</span>
+      <strong>{{ month_visit_count }}</strong>
+    </article>
+    <article class="abito-stat-card">
+      <span class="abito-stat-card__label">Personas agendadas</span>
+      <strong>{{ month_people_count }}</strong>
+    </article>
+    <article class="abito-stat-card">
+      <span class="abito-stat-card__label">Dias con actividad</span>
+      <strong>{{ active_day_count }}</strong>
+    </article>
+  </section>
+
+  <section class="abito-agenda__calendar-panel">
+    <div class="abito-agenda__toolbar">
+      <a href="?mes={{ previous_month }}" class="button">Mes anterior</a>
+
+      <form method="get" class="abito-agenda__month-form">
+        <div>
+          <p class="abito-eyebrow">Calendario mensual</p>
+          <h2>{{ month_label|capfirst }}</h2>
+        </div>
+        <div class="abito-agenda__month-controls">
+          <label for="agenda-month-picker">Ir a mes</label>
+          <input
+            type="month"
+            id="agenda-month-picker"
+            name="mes"
+            value="{{ month_value }}"
+            onchange="this.form.submit()"
+          >
+          <input type="hidden" id="agendaSelectedDate" name="fecha" value="{{ selected_day_key }}">
+        </div>
+      </form>
+
+      <a href="?mes={{ next_month }}" class="button">Mes siguiente</a>
+    </div>
+
+    <p class="abito-agenda__hint">
+      En celu podes deslizar el calendario y la tabla para ver todo comodo.
+    </p>
+
+    <div class="abito-calendar-shell">
+      <div class="abito-calendar-weekdays">
+        <span>Lun</span>
+        <span>Mar</span>
+        <span>Mie</span>
+        <span>Jue</span>
+        <span>Vie</span>
+        <span>Sab</span>
+        <span>Dom</span>
+      </div>
+
+      <div class="abito-calendar-grid">
+        {% for week in calendar_rows %}
+          {% for cell in week %}
+            {% if cell.is_current_month %}
+              <button
+                type="button"
+                class="abito-day-card{% if cell.is_selected %} is-selected{% endif %}{% if cell.is_today %} is-today{% endif %}{% if cell.has_activity %} has-activity{% endif %}"
+                data-agenda-day
+                data-date="{{ cell.date_key }}"
+                data-label="{{ cell.date|date:'l j \\d\\e F \\d\\e Y' }}"
+                data-count="{{ cell.visit_count }}"
+                aria-pressed="{% if cell.is_selected %}true{% else %}false{% endif %}"
+              >
+                <span class="abito-day-card__top">
+                  <span class="abito-day-card__number">{{ cell.day_number }}</span>
+                  {% if cell.is_today %}
+                    <span class="abito-day-card__tag">Hoy</span>
+                  {% endif %}
+                </span>
+
+                {% if cell.has_activity %}
+                  <span class="abito-day-card__summary">{{ cell.visit_count }} visitas</span>
+                  <span class="abito-day-card__summary abito-day-card__summary--soft">
+                    {{ cell.people_count }} personas
+                  </span>
+                  <span class="abito-slot-list">
+                    {% for slot in cell.time_slots %}
+                      <span class="abito-slot-chip">{{ slot.label }} | {{ slot.visit_count }}</span>
+                    {% endfor %}
+                    {% if cell.extra_slot_count %}
+                      <span class="abito-slot-chip is-muted">+{{ cell.extra_slot_count }} horarios</span>
+                    {% endif %}
+                  </span>
+                {% else %}
+                  <span class="abito-day-card__empty">Sin actividad</span>
+                {% endif %}
+              </button>
+            {% else %}
+              <div class="abito-day-card is-outside-month" aria-hidden="true">
+                <span class="abito-day-card__top">
+                  <span class="abito-day-card__number">{{ cell.day_number }}</span>
+                </span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="abito-day-detail">
+    <div class="abito-day-detail__header">
+      <div>
+        <p class="abito-eyebrow">Detalle del dia</p>
+        <h2 id="agendaDayTitle">{{ selected_day_label|capfirst }}</h2>
+      </div>
+      <p class="abito-day-detail__count" id="agendaDayCount">
+        {% if detail_rows %}
+          {{ detail_rows|length }} visita{{ detail_rows|length|pluralize }}
+        {% else %}
+          Sin visitas cargadas
+        {% endif %}
+      </p>
+    </div>
+
+    <div id="agendaDayEmpty" class="abito-empty-state{% if detail_rows %} is-hidden{% endif %}">
+      No hay visitas cargadas para este dia.
+    </div>
+
+    <div id="agendaDayTableWrap" class="abito-day-table-wrap{% if not detail_rows %} is-hidden{% endif %}">
+      <table class="abito-day-table">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Nombre</th>
+            <th>Celular</th>
+            <th>Cantidad</th>
+            <th>Evento</th>
+            <th>Estado</th>
+            <th>Origen</th>
+            <th>Vio catalogo</th>
+            <th>Ambos</th>
+            <th>DNI</th>
+            <th>Observaciones</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="agendaDayTableBody">
+          {% for row in detail_rows %}
+            <tr class="is-{{ row.estado_key }}">
+              <td data-label="Hora"><span class="abito-time-pill">{{ row.hora }}</span></td>
+              <td data-label="Nombre">{{ row.nombre }}</td>
+              <td data-label="Celular">{{ row.telefono }}</td>
+              <td data-label="Cantidad">{{ row.cantidad_personas }}</td>
+              <td data-label="Evento">{{ row.fecha_evento }}</td>
+              <td data-label="Estado"><span class="abito-status-pill">{{ row.estado }}</span></td>
+              <td data-label="Origen">{{ row.origen }}</td>
+              <td data-label="Vio catalogo">{{ row.vio_catalogo }}</td>
+              <td data-label="Ambos">{{ row.cantidad_preferencias }}</td>
+              <td data-label="DNI">{{ row.dni }}</td>
+              <td data-label="Observaciones">{{ row.observaciones }}</td>
+              <td data-label="Abrir"><a href="{{ row.admin_url }}" class="abito-inline-link">Abrir</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function() {
+    const detailSource = document.getElementById("agendaDayDetails");
+    if (!detailSource) {
+      return;
+    }
+
+    const detailMap = JSON.parse(detailSource.textContent);
+    const dayButtons = Array.from(document.querySelectorAll("[data-agenda-day]"));
+    const titleNode = document.getElementById("agendaDayTitle");
+    const countNode = document.getElementById("agendaDayCount");
+    const emptyNode = document.getElementById("agendaDayEmpty");
+    const tableWrapNode = document.getElementById("agendaDayTableWrap");
+    const tableBodyNode = document.getElementById("agendaDayTableBody");
+    const selectedDateInput = document.getElementById("agendaSelectedDate");
+    const currentMonth = "{{ month_value }}";
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        }[char];
+      });
+    }
+
+    function renderRows(rows) {
+      return rows.map(function(row) {
+        return [
+          '<tr class="is-' + escapeHtml(row.estado_key) + '">',
+          '<td data-label="Hora"><span class="abito-time-pill">' + escapeHtml(row.hora) + "</span></td>",
+          "<td data-label=\"Nombre\">" + escapeHtml(row.nombre) + "</td>",
+          "<td data-label=\"Celular\">" + escapeHtml(row.telefono) + "</td>",
+          "<td data-label=\"Cantidad\">" + escapeHtml(row.cantidad_personas) + "</td>",
+          "<td data-label=\"Evento\">" + escapeHtml(row.fecha_evento) + "</td>",
+          "<td data-label=\"Estado\"><span class=\"abito-status-pill\">" + escapeHtml(row.estado) + "</span></td>",
+          "<td data-label=\"Origen\">" + escapeHtml(row.origen) + "</td>",
+          "<td data-label=\"Vio catalogo\">" + escapeHtml(row.vio_catalogo) + "</td>",
+          "<td data-label=\"Ambos\">" + escapeHtml(row.cantidad_preferencias) + "</td>",
+          "<td data-label=\"DNI\">" + escapeHtml(row.dni) + "</td>",
+          "<td data-label=\"Observaciones\">" + escapeHtml(row.observaciones) + "</td>",
+          '<td data-label="Abrir"><a class="abito-inline-link" href="' + escapeHtml(row.admin_url) + '">Abrir</a></td>',
+          "</tr>"
+        ].join("");
+      }).join("");
+    }
+
+    function updateUrl(dateKey) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("mes", currentMonth);
+      url.searchParams.set("fecha", dateKey);
+      window.history.replaceState({}, "", url);
+    }
+
+    function updateDetail(button) {
+      const dateKey = button.dataset.date;
+      const label = button.dataset.label;
+      const rows = detailMap[dateKey] || [];
+      const count = Number(button.dataset.count || rows.length || 0);
+
+      selectedDateInput.value = dateKey;
+      titleNode.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+
+      if (count === 0) {
+        countNode.textContent = "Sin visitas cargadas";
+      } else if (count === 1) {
+        countNode.textContent = "1 visita";
+      } else {
+        countNode.textContent = count + " visitas";
+      }
+
+      if (rows.length) {
+        tableBodyNode.innerHTML = renderRows(rows);
+        tableWrapNode.classList.remove("is-hidden");
+        emptyNode.classList.add("is-hidden");
+      } else {
+        tableBodyNode.innerHTML = "";
+        tableWrapNode.classList.add("is-hidden");
+        emptyNode.classList.remove("is-hidden");
+      }
+
+      dayButtons.forEach(function(item) {
+        item.classList.toggle("is-selected", item === button);
+        item.setAttribute("aria-pressed", item === button ? "true" : "false");
+      });
+
+      updateUrl(dateKey);
+    }
+
+    dayButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        updateDetail(button);
+      });
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,617 @@
+body.abito-admin {
+  --abito-bg: #f5efe8;
+  --abito-surface: #fffdf9;
+  --abito-surface-strong: #f0e6da;
+  --abito-border: #dbc8b5;
+  --abito-border-strong: #c9a987;
+  --abito-text: #2b1d16;
+  --abito-muted: #72584b;
+  --abito-accent: #5a3425;
+  --abito-accent-strong: #3f2117;
+  --abito-shadow: 0 18px 40px rgba(61, 37, 23, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(201, 169, 135, 0.14), transparent 28%),
+    linear-gradient(180deg, #f7f2ec 0%, #f4eee7 100%);
+  color: var(--abito-text);
+}
+
+body.abito-admin #container {
+  background: transparent;
+}
+
+body.abito-admin #header {
+  background: linear-gradient(135deg, #251711 0%, #5b3a2e 60%, #7b5a4b 100%);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(31, 18, 13, 0.18);
+}
+
+body.abito-admin #header a:link,
+body.abito-admin #header a:visited {
+  color: #fff;
+}
+
+body.abito-admin #branding {
+  float: none;
+}
+
+body.abito-admin #user-tools {
+  font-size: 0.9rem;
+}
+
+body.abito-admin #content {
+  padding: 24px;
+}
+
+body.abito-admin #content-main,
+body.abito-admin #changelist {
+  width: 100%;
+}
+
+body.abito-admin .module,
+body.abito-admin .inline-group,
+body.abito-admin .dashboard .module,
+body.abito-admin .submit-row,
+body.abito-admin .messagelist li,
+body.abito-admin div.breadcrumbs {
+  border-radius: 18px;
+}
+
+body.abito-admin div.breadcrumbs {
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--abito-muted);
+  padding: 14px 18px;
+}
+
+body.abito-admin .module,
+body.abito-admin .inline-group {
+  border: 1px solid var(--abito-border);
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: var(--abito-shadow);
+}
+
+body.abito-admin .aligned .form-row,
+body.abito-admin .form-row {
+  border-color: rgba(219, 200, 181, 0.7);
+}
+
+body.abito-admin input,
+body.abito-admin select,
+body.abito-admin textarea {
+  border-radius: 12px;
+  border: 1px solid var(--abito-border);
+  padding: 10px 12px;
+}
+
+body.abito-admin input:focus,
+body.abito-admin select:focus,
+body.abito-admin textarea:focus {
+  border-color: var(--abito-border-strong);
+  box-shadow: 0 0 0 4px rgba(201, 169, 135, 0.22);
+}
+
+body.abito-admin .button,
+body.abito-admin input[type="submit"],
+body.abito-admin input[type="button"],
+body.abito-admin .submit-row input,
+body.abito-admin a.button,
+body.abito-admin .object-tools a {
+  border-radius: 999px;
+  border: 1px solid var(--abito-border-strong);
+  background: #fffaf5;
+  color: var(--abito-accent-strong);
+  padding: 10px 16px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+body.abito-admin .button:hover,
+body.abito-admin input[type="submit"]:hover,
+body.abito-admin input[type="button"]:hover,
+body.abito-admin .submit-row input:hover,
+body.abito-admin a.button:hover,
+body.abito-admin .object-tools a:hover {
+  transform: translateY(-1px);
+  border-color: var(--abito-accent);
+  box-shadow: 0 10px 20px rgba(63, 33, 23, 0.12);
+}
+
+body.abito-admin .submit-row input.default,
+body.abito-admin .button.default,
+body.abito-admin .abito-button-primary {
+  background: linear-gradient(135deg, #4c2b1f 0%, #7a4f3f 100%);
+  border-color: #4c2b1f;
+  color: #fff;
+}
+
+.abito-branding__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.abito-branding__title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.abito-branding__subtitle {
+  font-size: 0.95rem;
+  opacity: 0.82;
+}
+
+.abito-admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.abito-admin-nav__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
+
+.abito-admin-nav__link:hover,
+.abito-admin-nav__link.is-active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.abito-eyebrow {
+  margin: 0 0 8px;
+  color: var(--abito-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.abito-dashboard,
+.abito-agenda {
+  display: grid;
+  gap: 20px;
+}
+
+.abito-dashboard__hero,
+.abito-agenda__hero,
+.abito-agenda__calendar-panel,
+.abito-day-detail,
+.abito-admin-list,
+.abito-shortcut-card,
+.abito-stat-card {
+  border: 1px solid var(--abito-border);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.94);
+  box-shadow: var(--abito-shadow);
+}
+
+.abito-dashboard__hero,
+.abito-agenda__hero {
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(249, 241, 233, 0.96) 100%);
+}
+
+.abito-dashboard__hero h1,
+.abito-agenda__hero h1,
+.abito-admin-list h2,
+.abito-shortcut-card h2,
+.abito-agenda__month-form h2,
+.abito-day-detail h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.12;
+  color: var(--abito-accent-strong);
+}
+
+.abito-dashboard__lead,
+.abito-agenda__lead,
+.abito-shortcut-card p,
+.abito-admin-list__header p,
+.abito-agenda__hint {
+  margin: 0;
+  color: var(--abito-muted);
+  line-height: 1.6;
+}
+
+.abito-dashboard__hero-actions,
+.abito-agenda__hero-actions,
+.abito-shortcut-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.abito-shortcut-grid,
+.abito-stats-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.abito-shortcut-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.abito-stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.abito-shortcut-card,
+.abito-stat-card,
+.abito-admin-list {
+  padding: 22px;
+}
+
+.abito-stat-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--abito-accent-strong);
+}
+
+.abito-stat-card__label {
+  color: var(--abito-muted);
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.abito-admin-list__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.abito-agenda__toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.abito-agenda__month-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.abito-agenda__month-controls {
+  display: grid;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.abito-agenda__month-controls label {
+  color: var(--abito-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.abito-agenda__calendar-panel {
+  padding: 24px;
+}
+
+.abito-calendar-shell {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.abito-calendar-weekdays,
+.abito-calendar-grid {
+  min-width: 860px;
+}
+
+.abito-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.abito-calendar-weekdays span {
+  color: var(--abito-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.abito-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.abito-day-card {
+  display: grid;
+  gap: 10px;
+  min-height: 152px;
+  padding: 14px;
+  border: 1px solid var(--abito-border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffdf9 0%, #faf4ee 100%);
+  color: var(--abito-text);
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.abito-day-card.has-activity {
+  border-color: rgba(122, 79, 63, 0.38);
+}
+
+.abito-day-card.is-selected {
+  border-color: var(--abito-accent);
+  box-shadow: 0 0 0 3px rgba(122, 79, 63, 0.14), 0 18px 28px rgba(61, 37, 23, 0.1);
+}
+
+.abito-day-card.is-today {
+  background: linear-gradient(180deg, #fff7ef 0%, #fdf0e3 100%);
+}
+
+.abito-day-card.is-outside-month {
+  background: rgba(239, 230, 218, 0.58);
+  color: rgba(114, 88, 75, 0.6);
+  box-shadow: none;
+}
+
+.abito-day-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.abito-day-card__number {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.abito-day-card__tag,
+.abito-slot-chip,
+.abito-time-pill,
+.abito-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.abito-day-card__tag {
+  padding: 4px 10px;
+  background: rgba(90, 52, 37, 0.12);
+  color: var(--abito-accent-strong);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.abito-day-card__summary,
+.abito-day-card__empty {
+  color: var(--abito-accent-strong);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.abito-day-card__summary--soft,
+.abito-day-card__empty {
+  color: var(--abito-muted);
+  font-weight: 600;
+}
+
+.abito-slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.abito-slot-chip {
+  min-height: 28px;
+  padding: 0 10px;
+  background: rgba(90, 52, 37, 0.08);
+  color: var(--abito-accent-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.abito-slot-chip.is-muted {
+  background: rgba(114, 88, 75, 0.1);
+  color: var(--abito-muted);
+}
+
+.abito-day-detail {
+  padding: 24px;
+}
+
+.abito-day-detail__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 20px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.abito-day-detail__count {
+  margin: 0;
+  color: var(--abito-muted);
+  font-weight: 700;
+}
+
+.abito-empty-state {
+  padding: 16px 18px;
+  border: 1px dashed var(--abito-border-strong);
+  border-radius: 16px;
+  background: rgba(240, 230, 218, 0.48);
+  color: var(--abito-muted);
+}
+
+.abito-day-table-wrap {
+  overflow-x: auto;
+}
+
+.abito-day-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1080px;
+}
+
+.abito-day-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--abito-border);
+  background: rgba(240, 230, 218, 0.72);
+  color: var(--abito-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.abito-day-table tbody tr {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.abito-day-table tbody tr + tr td {
+  border-top: 1px solid rgba(219, 200, 181, 0.56);
+}
+
+.abito-day-table tbody tr.is-cancelada {
+  background: rgba(255, 238, 238, 0.8);
+}
+
+.abito-day-table tbody tr.is-realizada {
+  background: rgba(239, 249, 241, 0.86);
+}
+
+.abito-day-table tbody tr.is-no_asistio {
+  background: rgba(250, 243, 225, 0.9);
+}
+
+.abito-day-table td {
+  padding: 14px;
+  vertical-align: top;
+}
+
+.abito-time-pill {
+  min-height: 32px;
+  padding: 0 12px;
+  background: rgba(90, 52, 37, 0.08);
+  color: var(--abito-accent-strong);
+  font-weight: 700;
+}
+
+.abito-status-pill {
+  min-height: 30px;
+  padding: 0 10px;
+  background: rgba(114, 88, 75, 0.12);
+  color: var(--abito-accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.abito-inline-link {
+  color: var(--abito-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.abito-inline-link:hover {
+  text-decoration: underline;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+@media (max-width: 960px) {
+  body.abito-admin #content {
+    padding: 18px;
+  }
+
+  .abito-agenda__toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .abito-agenda__toolbar > .button {
+    width: fit-content;
+  }
+}
+
+@media (max-width: 720px) {
+  .abito-dashboard__hero,
+  .abito-agenda__hero,
+  .abito-agenda__calendar-panel,
+  .abito-day-detail,
+  .abito-shortcut-card,
+  .abito-stat-card,
+  .abito-admin-list {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .abito-agenda__month-form {
+    align-items: stretch;
+  }
+
+  .abito-day-table {
+    min-width: 0;
+  }
+
+  .abito-day-table thead {
+    display: none;
+  }
+
+  .abito-day-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .abito-day-table tbody tr {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--abito-border);
+    border-radius: 16px;
+  }
+
+  .abito-day-table tbody tr + tr td {
+    border-top: 0;
+  }
+
+  .abito-day-table td {
+    display: grid;
+    gap: 4px;
+    padding: 0;
+  }
+
+  .abito-day-table td::before {
+    content: attr(data-label);
+    color: var(--abito-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}

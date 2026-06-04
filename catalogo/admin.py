@@ -18,6 +18,12 @@ from .models import (
 )
 
 
+class BaseCatalogAdmin(admin.ModelAdmin):
+    save_on_top = True
+    show_full_result_count = False
+    show_facets = admin.ShowFacets.NEVER
+
+
 class TalleColorTrajeInline(admin.TabularInline):
     model = TalleColorTraje
     extra = 1
@@ -39,7 +45,7 @@ class TalleColorZapatoInline(admin.TabularInline):
 
 
 @admin.register(Traje)
-class TrajeAdmin(admin.ModelAdmin):
+class TrajeAdmin(BaseCatalogAdmin):
     list_display = ("id", "linea", "tela", "precio", "activo", "creado")
     list_filter = ("linea", "activo")
     search_fields = ("tela", "descripcion")
@@ -61,7 +67,7 @@ class TrajeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Chaleco)
-class ChalecoAdmin(admin.ModelAdmin):
+class ChalecoAdmin(BaseCatalogAdmin):
     list_display = ("id", "precio", "activo", "creado")
     list_filter = ("activo",)
     search_fields = ("descripcion",)
@@ -70,7 +76,7 @@ class ChalecoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Cinturon)
-class CinturonAdmin(admin.ModelAdmin):
+class CinturonAdmin(BaseCatalogAdmin):
     list_display = ("id", "precio", "activo", "creado")
     list_filter = ("activo",)
     search_fields = ("descripcion",)
@@ -78,7 +84,7 @@ class CinturonAdmin(admin.ModelAdmin):
 
 
 @admin.register(Corbata)
-class CorbataAdmin(admin.ModelAdmin):
+class CorbataAdmin(BaseCatalogAdmin):
     list_display = ("id", "precio", "activo", "creado")
     list_filter = ("activo",)
     search_fields = ("descripcion",)
@@ -86,7 +92,7 @@ class CorbataAdmin(admin.ModelAdmin):
 
 
 @admin.register(Camisa)
-class CamisaAdmin(admin.ModelAdmin):
+class CamisaAdmin(BaseCatalogAdmin):
     list_display = ("id", "precio", "activo", "creado")
     list_filter = ("activo",)
     search_fields = ("descripcion",)
@@ -95,7 +101,7 @@ class CamisaAdmin(admin.ModelAdmin):
 
 
 @admin.register(Zapato)
-class ZapatoAdmin(admin.ModelAdmin):
+class ZapatoAdmin(BaseCatalogAdmin):
     list_display = ("id", "precio", "activo", "creado")
     list_filter = ("activo",)
     search_fields = ("descripcion",)
@@ -104,7 +110,7 @@ class ZapatoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Combo)
-class ComboAdmin(admin.ModelAdmin):
+class ComboAdmin(BaseCatalogAdmin):
     list_display = (
         "id",
         "orden",
@@ -121,7 +127,7 @@ class ComboAdmin(admin.ModelAdmin):
 
 
 @admin.register(ConfiguracionVisitas)
-class ConfiguracionVisitasAdmin(admin.ModelAdmin):
+class ConfiguracionVisitasAdmin(BaseCatalogAdmin):
     readonly_fields = ("actualizado",)
     fieldsets = (
         (
