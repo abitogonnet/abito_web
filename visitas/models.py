@@ -53,6 +53,16 @@ class Visita(models.Model):
 
     class Meta:
         ordering = ["-fecha_visita", "-hora_visita", "-creado"]
+        indexes = [
+            models.Index(
+                fields=["fecha_visita", "hora_visita"],
+                name="visitas_fecha_hora_idx",
+            ),
+            models.Index(
+                fields=["fecha_visita", "estado"],
+                name="visitas_fecha_estado_idx",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.nombre} - {self.fecha_visita} {self.hora_visita}"
