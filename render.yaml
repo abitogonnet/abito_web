@@ -3,7 +3,7 @@ services:
     name: abito-web
     env: python
     buildCommand: "bash build.sh"
-    startCommand: "gunicorn abito_web.wsgi:application"
+    startCommand: "bash start.sh"
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.2

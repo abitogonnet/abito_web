@@ -20,6 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
+def env_path(name, default):
+    raw_value = os.getenv(name, "").strip()
+    if not raw_value:
+        return default
+
+    candidate = Path(raw_value)
+    if not candidate.is_absolute():
+        candidate = BASE_DIR / candidate
+    return candidate
+
+
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-abito-local")
 
 DEBUG = os.getenv("DEBUG", "true").lower() in {"1", "true", "yes", "on"}
@@ -118,7 +129,8 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = env_path("MEDIA_ROOT", BASE_DIR / "media")
+MEDIA_SEED_ROOT = env_path("MEDIA_SEED_ROOT", BASE_DIR / "media")
 
 if USE_S3:
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
